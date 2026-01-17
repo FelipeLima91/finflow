@@ -1,65 +1,36 @@
-v1. O "Cérebro" e a "Cara" (Frontend + Backend)
-Aqui é onde a mágica acontece: o que você vê na tela e as regras matemáticas (soma, subtração).
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Tecnologia: Next.js (versão mais recente).
+## Getting Started
 
-Linguagem: TypeScript.
+First, run the development server:
 
-Por que: É a linguagem padrão do mercado hoje. O TypeScript é vital para financeiro porque ele bloqueia erros bobos (como tentar somar "dez reais" com o número 10).
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-Onde vive a lógica: No próprio Next.js. Antigamente, separava-se o site (Front) da lógica (Back). O Next.js une os dois. Isso simplifica tudo: menos arquivos, menos configurações.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-2. A "Maquiagem" (Estilo e Design)
-   É o que vai garantir que fique "bonitinho" e profissional sem você precisar ser um designer formado.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-Tecnologia: Tailwind CSS + Shadcn/UI.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-Como funciona: Em vez de desenhar um botão do zero (tamanho, cor, borda, sombra), você usa o Shadcn que já te dá componentes prontos e elegantes (estilo Apple/Google). É copiar, colar e usar.
+## Learn More
 
-3. A "Memória" (Banco de Dados e Login)
-   Onde os dados ficam guardados para não sumirem quando você fecha a janela.
+To learn more about Next.js, take a look at the following resources:
 
-Tecnologia: Supabase.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-O Banco de Dados: Usa PostgreSQL. É o banco mais robusto e seguro do mundo open-source. Perfeito para lidar com dinheiro.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-O Login (Autenticação): O próprio Supabase gerencia isso. Você não precisa programar a segurança da senha, criptografia, etc. Ele já te entrega pronto.
+## Deploy on Vercel
 
-Sua estratégia: Você criará um único usuário no painel do Supabase. Você e sua família usarão esse mesmo email e senha para entrar.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-4. A "Casa" (Hospedagem/Deploy)
-   Onde o site fica ligado 24h por dia para você acessar do celular na rua.
-
-Plataforma: Vercel.
-
-Conexão: Ela se conecta direto no seu código. Salvou o código no computador -> O site atualiza sozinho na internet em 1 minuto.
-
-A Garantia de Custo Zero (Como não pagar nada?)
-Muitas empresas oferecem planos gratuitos ("Hobby Tier") para atrair desenvolvedores. Para o uso de uma família, é impossível estourar esses limites. Veja os detalhes:
-
-Vercel (Hospedagem):
-
-Custo: R$ 0,00 para projetos não comerciais.
-
-Limite: O site sai do ar se tiver milhões de acessos. Como são apenas 2 pessoas usando, você está 99,9% longe do limite.
-
-Supabase (Banco de Dados):
-
-Custo: R$ 0,00 no plano Free.
-
-Limite: 500MB de dados.
-
-Na prática: Dados de texto (gastos, descrições) ocupam bytes. Você precisaria lançar milhares de gastos por dia durante anos para encher 500MB.
-
-GitHub (Onde fica o código):
-
-Custo: R$ 0,00 para repositórios públicos ou privados.
-
-Resumo da Segurança (Código Aberto vs. Dados Privados)
-Como você quer deixar o código aberto (Open Source) para outros aprenderem, a estrutura é esta:
-
-O Código (Público): A "receita do bolo" fica no GitHub. Todo mundo vê como o site é feito, onde ficam os botões, como a conta de somar é feita.
-
-As Chaves (Privadas): As senhas de acesso ao banco ("variáveis de ambiente") ficam escondidas apenas na Vercel (o site de hospedagem).
-
-O Resultado: Se um estranho baixar seu código, ele terá um site "oco". Ele não consegue ver seus gastos porque ele não tem a chave que conecta no seu banco de dados Supabase.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
