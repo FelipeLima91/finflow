@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💰 FinFlow
 
-## Getting Started
+O seu gerenciador financeiro pessoal, simples e eficiente.
 
-First, run the development server:
+## 🚀 Como Iniciar
+
+Primeiro, rode o servidor de desenvolvimento:
 
 ```bash
 npm run dev
-# or
+# ou
 yarn dev
-# or
+# ou
 pnpm dev
-# or
+# ou
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver o resultado.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗️ Arquitetura do Projeto
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. 🧠 O Cérebro e a Cara (Frontend + Backend)
 
-## Learn More
+_Aqui é onde a mágica acontece: o que você vê na tela e as regras matemáticas._
 
-To learn more about Next.js, take a look at the following resources:
+- **Tecnologia**: [Next.js](https://nextjs.org) (versão mais recente)
+- **Linguagem**: [TypeScript](https://www.typescriptlang.org/)
+- **Por que?**: É a linguagem padrão do mercado. O TypeScript é vital para apps financeiros porque bloqueia erros "bobos" (como tentar somar texto com número).
+- **Onde vive a lógica**: No próprio Next.js. Ele une o site (Front) e a lógica (Back), simplificando arquivos e configurações.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. 🎨 A Maquiagem (Estilo e Design)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+_Garante que fique bonito e profissional sem precisar de um designer._
 
-## Deploy on Vercel
+- **Tecnologia**: [Tailwind CSS](https://tailwindcss.com/) + [Shadcn/UI](https://ui.shadcn.com/)
+- **Como funciona**: Em vez de desenhar botões do zero, usamos o Shadcn que já entrega componentes elegantes (estilo Apple/Google) prontos para copiar e colar.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. 💾 A Memória (Banco de Dados e Login)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+_Onde os dados ficam guardados para não sumirem._
+
+- **Tecnologia**: [Supabase](https://supabase.com/)
+- **Banco de Dados**: PostgreSQL. O mais robusto e seguro do mundo open-source. Perfeito para lidar com dinheiro.
+- **Autenticação**: O próprio Supabase gerencia o login. Segurança e criptografia já vêm prontas.
+- **Estratégia**: Um único usuário para a família inteira acessar.
+
+### 4. 🏠 A Casa (Hospedagem/Deploy)
+
+_Onde o site mora para você acessar 24h por dia._
+
+- **Plataforma**: [Vercel](https://vercel.com/)
+- **Conexão**: Conecta direto no seu código. Salvou no computador -> Atualiza no site em 1 minuto.
+
+---
+
+## 💸 Custo Zero Garantido
+
+Muitas empresas oferecem planos gratuitos ("Hobby Tier") para desenvolvedores. Para o uso familiar, é virtualmente impossível estourar esses limites.
+
+### ⚡ Vercel (Hospedagem)
+
+- **Custo**: R$ 0,00 (Projetos não comerciais)
+- **Limite**: Altíssimo. Só sairia do ar com milhões de acessos simultâneos.
+
+### 🗄️ Supabase (Banco de Dados)
+
+- **Custo**: R$ 0,00 (Plano Free)
+- **Limite**: 500MB de dados.
+- **Na prática**: Texto de gastos ocupa bytes. Levaria anos lançando milhares de gastos por dia para encher.
+
+### 🐙 GitHub (Código)
+
+- **Custo**: R$ 0,00 (Repositórios públicos ou privados)
+
+---
+
+## 🔒 Segurança e Open Source
+
+Como o código é aberto para aprendizado, a segurança funciona assim:
+
+> **O Código (Público)** 🔓
+> A "receita do bolo" fica no GitHub. Todos veem como o site é feito.
+
+> **As Chaves (Privadas)** 🗝️
+> As senhas de acesso ao banco ("variáveis de ambiente") ficam escondidas apenas na Vercel.
+
+**Resultado**: Se alguém baixar seu código, terá um site "oco". Ninguém consegue ver seus dados financeiros sem as chaves privadas.
+
+---
+
+## 📚 Saiba Mais
+
+Para aprender mais sobre as tecnologias usadas:
+
+- [Documentação Next.js](https://nextjs.org/docs)
+- [Aprenda Next.js](https://nextjs.org/learn)
