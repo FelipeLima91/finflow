@@ -4,16 +4,16 @@ O seu gerenciador financeiro pessoal, simples e eficiente.
 
 ## 🚀 Como Iniciar
 
-Primeiro, rode o servidor de desenvolvimento:
+Primeiro, Instalar:
+
+```bash
+npm install
+```
+
+Depois, rode o servidor de desenvolvimento:
 
 ```bash
 npm run dev
-# ou
-yarn dev
-# ou
-pnpm dev
-# ou
-bun dev
 ```
 
 Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver o resultado.
@@ -52,6 +52,42 @@ Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver o 
 - **Limite**: 500MB de dados.
 - **Na prática**: Texto de gastos ocupa bytes. Levaria anos lançando milhares de gastos por dia para encher.
 
+### ⚡ Funcionalidades com Supabase
+
+O app utiliza o poder do Supabase para gerenciar todas as transações em tempo real:
+
+1.  **Inserção de Dados (`Insert`)**:
+    - Ao preencher o formulário, os dados são enviados diretamente para a tabela `transactions`.
+    - Suporte a tipos: Texto (Descrição), Moeda (Valor), Categoria e Data.
+
+2.  **Exclusão Segura (`Delete`)**:
+    - Implementamos um **Modo de Edição** ativado pelo ícone de lápis.
+    - Ao clicar na lixeira, um modal de confirmação aparece para evitar cliques acidentais.
+    - A exclusão é refletida instantaneamente no banco de dados.
+
+3.  **Leitura (`Select`)**:
+    - Ao abrir o app, buscamos as últimas transações automaticamente.
+    - O saldo e os cards de resumo são calculados com base nesses dados vivos.
+
+---
+
+## ✨ Funcionalidades do App
+
+### 📝 Adicionar Transação
+
+Preencha o formulário na esquerda com:
+
+- **Descrição**: O que você comprou/recebeu.
+- **Valor**: O valor da transação.
+- **Categoria**: Classifique para organizar (Alimentação, Casa, Lazer, etc).
+- **Tipo**: Entrada (+) ou Saída (-).
+
+### 🗑️ Excluir Transação
+
+1.  Na lista de movimentações, clique no **ícone de lápis** (✏️) no cabeçalho.
+2.  Ícones de **lixeira** (🗑️) aparecerão em cada linha.
+3.  Clique na lixeira desejada e confirme a ação no modal.
+
 ---
 
 ## 🔒 Segurança e Open Source
@@ -63,8 +99,6 @@ Como o código é aberto para aprendizado, a segurança funciona assim:
 
 > **As Chaves (Privadas)** 🗝️
 > As senhas de acesso ao banco ("variáveis de ambiente") ficam escondidas apenas na Vercel.
-
-**Resultado**: Se alguém baixar seu código, terá um site "oco". Ninguém consegue ver seus dados financeiros sem as chaves privadas.
 
 ---
 
