@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -6,9 +6,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
-export function TransactionList() {
+import { Transaction } from "@/types";
+
+interface TransactionListProps {
+  transacoes: Transaction[];
+}
+
+export function TransactionList({ transacoes }: TransactionListProps) {
   return (
     <Card className="md:col-span-8">
       <CardHeader>
@@ -25,40 +31,39 @@ export function TransactionList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/* Dados Fictícios para visualizar */}
-            <TableRow>
-              <TableCell className="font-medium">
-                Compra Semanal
-              </TableCell>
-              <TableCell>Alimentação</TableCell>
-              <TableCell>17/01/2026</TableCell>
-              <TableCell className="text-right text-rose-600">
-                - R$ 450,00
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">
-                Pagamento Projeto
-              </TableCell>
-              <TableCell>Trabalho</TableCell>
-              <TableCell>15/01/2026</TableCell>
-              <TableCell className="text-right text-emerald-600">
-                + R$ 2.500,00
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">
-                Internet Fibra
-              </TableCell>
-              <TableCell>Contas Fixas</TableCell>
-              <TableCell>10/01/2026</TableCell>
-              <TableCell className="text-right text-rose-600">
-                - R$ 120,00
-              </TableCell>
-            </TableRow>
+            {transacoes.map((transaction) => (
+              <TableRow key={transaction.id}>
+                <TableCell className="font-medium">
+                  {transaction.description}
+                </TableCell>
+                <TableCell>{transaction.category}</TableCell>
+                <TableCell>
+                  {new Date(transaction.date).toLocaleDateString("pt-BR")}
+                </TableCell>
+                <TableCell
+                  className={`text-right ${transaction.type === "income" ? "text-emerald-600" : "text-rose-600"}`}
+                >
+                  {transaction.type === "expense" ? "- " : "+ "}
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(transaction.amount)}
+                </TableCell>
+              </TableRow>
+            ))}
+            {transacoes.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="text-center text-muted-foreground h-24"
+                >
+                  Nenhuma transação registrada.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>
     </Card>
-  )
+  );
 }
