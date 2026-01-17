@@ -7,18 +7,56 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import { Transaction } from "@/types";
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { Pencil, Trash } from "lucide-react";
 
 interface TransactionListProps {
   transacoes: Transaction[];
+  onDelete: (id: string) => void;
 }
 
-export function TransactionList({ transacoes }: TransactionListProps) {
+export function TransactionList({ transacoes, onDelete }: TransactionListProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const confirmDelete = (id: string) => {
+    setDeleteId(id);
+  };
+  const handleDelete = async () => {
+    if (deleteId) {
+
+      await onDelete(deleteId);
+
+      setDeleteId(null);
+    }
+  };
+
   return (
     <Card className="md:col-span-8">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Últimas Movimentações</CardTitle>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsEditing(!isEditing)}
+          className={
+            isEditing ? "text-primary bg-muted" : "text-muted-foreground"
+          }
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
       </CardHeader>
       <CardContent>
         <Table>
@@ -28,6 +66,7 @@ export function TransactionList({ transacoes }: TransactionListProps) {
               <TableHead>Categoria</TableHead>
               <TableHead>Data</TableHead>
               <TableHead className="text-right">Valor</TableHead>
+              {isEditing && <TableHead className="w-[50px]">Ações</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -49,6 +88,18 @@ export function TransactionList({ transacoes }: TransactionListProps) {
                     currency: "BRL",
                   }).format(transaction.amount)}
                 </TableCell>
+                {isEditing && (
+                  <TableCell className="py-0">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                      onClick={() => confirmDelete(transaction.id)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
             {transacoes.length === 0 && (
@@ -64,6 +115,27 @@ export function TransactionList({ transacoes }: TransactionListProps) {
           </TableBody>
         </Table>
       </CardContent>
+      {/* Componente do Modal (Fica invisível até ser acionado) */}
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Essa ação não pode ser desfeita. Isso excluirá permanentemente a
+              transação.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-rose-600 hover:bg-rose-700"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

@@ -7,7 +7,6 @@ import { supabase } from "@/lib/supabase";
 import { Transaction } from "@/types";
 import { useEffect, useState } from "react";
 
-
 export default function Home() {
   const [transacoes, setTransacoes] = useState<Transaction[]>([]);
 
@@ -18,6 +17,11 @@ export default function Home() {
 
   async function handleSalvar(dadosDoFormulario: any) {
     await supabase.from("transactions").insert(dadosDoFormulario);
+    fetchTransacoes();
+  }
+
+  async function handleExcluir(id: string) {
+    await supabase.from("transactions").delete().eq("id", id);
     fetchTransacoes();
   }
 
@@ -40,7 +44,10 @@ export default function Home() {
           <NewTransactionForm onSave={handleSalvar} />
 
           {/* COLUNA DA DIREITA: HISTÓRICO */}
-          <TransactionList transacoes={transacoes} />
+          <TransactionList 
+            transacoes={transacoes} 
+            onDelete={handleExcluir} 
+            />
         </div>
       </div>
     </main>
