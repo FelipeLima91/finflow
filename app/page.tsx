@@ -10,7 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowDownCircle, ArrowUpCircle, DollarSign, Plus } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, DollarSign } from "lucide-react";
+import { NewTransactionForm } from "@/components/new-transaction-form";
 
 export default function Home() {
   return (
@@ -83,40 +84,7 @@ export default function Home() {
         {/* ÁREA PRINCIPAL: FORMULÁRIO E TABELA */}
         <div className="grid gap-8 md:grid-cols-12">
           {/* COLUNA DA ESQUERDA: NOVA TRANSAÇÃO */}
-          <Card className="md:col-span-4 h-fit">
-            <CardHeader>
-              <CardTitle>Nova Transação</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="descricao">Descrição</Label>
-                <Input id="descricao" placeholder="Ex: Mercado, Luz..." />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="valor">Valor</Label>
-                  <Input id="valor" type="number" placeholder="0,00" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="tipo">Tipo</Label>
-                  <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                    <option value="saida">Saída</option>
-                    <option value="entrada">Entrada</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="categoria">Categoria</Label>
-                <Input id="categoria" placeholder="Ex: Alimentação" />
-              </div>
-
-              <Button className="w-full bg-zinc-900 hover:bg-zinc-800">
-                <Plus className="mr-2 h-4 w-4" /> Adicionar
-              </Button>
-            </CardContent>
-          </Card>
+          <NewTransactionForm />
 
           {/* COLUNA DA DIREITA: HISTÓRICO */}
           <Card className="md:col-span-8">
