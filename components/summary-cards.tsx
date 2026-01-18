@@ -25,7 +25,7 @@ const balance = (transacoes: Transaction[]) =>
 export function SummaryCards({ transacoes }: SummaryCardsProps) {
   return (
     <div className="grid gap-4 md:grid-cols-3">
-      <Card>
+      <Card className="min-w-0 py-3 gap-2 md:py-6 md:gap-6">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Entradas</CardTitle>
           <ArrowUpCircle className="h-4 w-4 text-emerald-500" />
@@ -43,7 +43,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="min-w-0 py-3 gap-2 md:py-6 md:gap-6">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Saídas</CardTitle>
           <ArrowDownCircle className="h-4 w-4 text-rose-500" />
@@ -61,7 +61,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="min-w-0 py-3 gap-2 md:py-6 md:gap-6">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Saldo Atual</CardTitle>
           <DollarSign className="h-4 w-4 text-zinc-500" />
