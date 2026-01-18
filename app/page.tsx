@@ -42,7 +42,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-zinc-50 p-4 md:p-8">
+    <main className="min-h-screen bg-zinc-50 p-2 sm:p-4 md:p-8">
       <div className="mx-auto max-w-6xl space-y-8">
         {/* CABEÇALHO */}
         <Header />
@@ -51,7 +51,7 @@ export default function Home() {
         <SummaryCards transacoes={transacoes} />
 
         {/* ÁREA PRINCIPAL: FORMULÁRIO E TABELA */}
-        <div className="grid gap-8 md:grid-cols-12">
+        <div className="grid gap-4 md:grid-cols-12">
           {/* COLUNA DA ESQUERDA: NOVA TRANSAÇÃO */}
           <NewTransactionForm onSave={handleSalvar} />
 

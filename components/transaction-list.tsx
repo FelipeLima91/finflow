@@ -44,8 +44,8 @@ export function TransactionList({ transacoes, onDelete }: TransactionListProps) 
   };
 
   return (
-    <Card className="md:col-span-8">
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card className="md:col-span-8 min-w-0">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 space-x-2">
         <CardTitle>Últimas Movimentações</CardTitle>
         <Button
           variant="ghost"
@@ -59,61 +59,63 @@ export function TransactionList({ transacoes, onDelete }: TransactionListProps) 
         </Button>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Descrição</TableHead>
-              <TableHead>Categoria</TableHead>
-              <TableHead>Data</TableHead>
-              <TableHead className="text-right">Valor</TableHead>
-              {isEditing && <TableHead className="w-[50px]">Ações</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transacoes.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell className="font-medium">
-                  {transaction.description}
-                </TableCell>
-                <TableCell>{transaction.category}</TableCell>
-                <TableCell>
-                  {new Date(transaction.date).toLocaleDateString("pt-BR")}
-                </TableCell>
-                <TableCell
-                  className={`text-right ${transaction.type === "income" ? "text-emerald-600" : "text-rose-600"}`}
-                >
-                  {transaction.type === "expense" ? "- " : "+ "}
-                  {new Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(transaction.amount)}
-                </TableCell>
-                {isEditing && (
-                  <TableCell className="py-0">
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
-                      onClick={() => confirmDelete(transaction.id)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-            {transacoes.length === 0 && (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="text-center text-muted-foreground h-24"
-                >
-                  Nenhuma transação registrada.
-                </TableCell>
+                <TableHead>Descrição</TableHead>
+                <TableHead>Categoria</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead className="text-right">Valor</TableHead>
+                {isEditing && <TableHead className="w-[50px]">Ações</TableHead>}
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {transacoes.map((transaction) => (
+                <TableRow key={transaction.id}>
+                  <TableCell className="font-medium">
+                    {transaction.description}
+                  </TableCell>
+                  <TableCell>{transaction.category}</TableCell>
+                  <TableCell>
+                    {new Date(transaction.date).toLocaleDateString("pt-BR")}
+                  </TableCell>
+                  <TableCell
+                    className={`text-right ${transaction.type === "income" ? "text-emerald-600" : "text-rose-600"}`}
+                  >
+                    {transaction.type === "expense" ? "- " : "+ "}
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(transaction.amount)}
+                  </TableCell>
+                  {isEditing && (
+                    <TableCell className="py-0">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                        onClick={() => confirmDelete(transaction.id)}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+              {transacoes.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={4}
+                    className="text-center text-muted-foreground h-24"
+                  >
+                    Nenhuma transação registrada.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
       {/* Componente do Modal (Fica invisível até ser acionado) */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

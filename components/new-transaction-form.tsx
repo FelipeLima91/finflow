@@ -99,7 +99,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
   // Se não der match em nada, o CommandEmpty aparece.
 
   return (
-    <Card className="md:col-span-4 h-fit">
+    <Card className="md:col-span-4 h-fit min-w-0">
       <CardHeader>
         <CardTitle>Nova Transação</CardTitle>
       </CardHeader>
@@ -115,7 +115,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="valor">Valor</Label>
               <Input
