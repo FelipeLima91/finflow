@@ -16,8 +16,20 @@ export default function Home() {
   }
 
   async function handleSalvar(dadosDoFormulario: any) {
-    await supabase.from("transactions").insert(dadosDoFormulario);
-    fetchTransacoes();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from("transactions")
+      .insert({ ...dadosDoFormulario, user_id: user.id });
+    if (error) {
+      console.error(error);
+      alert("Erro ao salvar");
+    } else {
+      await fetchTransacoes();
+    }
   }
 
   async function handleExcluir(id: string) {
@@ -44,10 +56,7 @@ export default function Home() {
           <NewTransactionForm onSave={handleSalvar} />
 
           {/* COLUNA DA DIREITA: HISTÓRICO */}
-          <TransactionList 
-            transacoes={transacoes} 
-            onDelete={handleExcluir} 
-            />
+          <TransactionList transacoes={transacoes} onDelete={handleExcluir} />
         </div>
       </div>
     </main>
