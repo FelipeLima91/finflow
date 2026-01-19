@@ -105,7 +105,7 @@ export default function Home() {
           <NewTransactionForm onSave={handleSalvar} />
 
           {/* COLUNA DA DIREITA: HISTÓRICO */}
-          <TransactionList transacoes={transacoes} onDelete={handleExcluir} />
+          <TransactionList transacoes={transacoes} onDelete={handleExcluir} limit={7} />
         </div>
       </div>
     </main>
