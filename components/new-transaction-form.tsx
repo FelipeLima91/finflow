@@ -77,12 +77,18 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
     // Essa linha remove tudo que não é número e divide por 100
     const numericAmount = Number(amount.replace(/\D/g, "")) / 100;
 
+    const now = new Date();
+    // Log para depuração da data completa (horário local)
+    console.log("Enviando data completa (ISO):", now.toISOString());
+    console.log("Enviando data completa (Local):", now.toLocaleString());
+
     // Chama a função do Pai enviando os dados limpos
     await onSave({
       description,
       amount: numericAmount,
       category,
       type: type === "entrada" ? "income" : "expense", // Traduz português -> inglês pro banco
+      date: now.toISOString(),
     });
 
     // Limpa tudo depois de salvar

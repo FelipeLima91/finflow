@@ -15,7 +15,10 @@ export default function Home() {
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   async function fetchTransacoes() {
-    const { data } = await supabase.from("transactions").select("*");
+    const { data } = await supabase
+      .from("transactions")
+      .select("*")
+      .order("date", { ascending: false });
     setTransacoes(data || []);
   }
 
@@ -105,7 +108,7 @@ export default function Home() {
           <NewTransactionForm onSave={handleSalvar} />
 
           {/* COLUNA DA DIREITA: HISTÓRICO */}
-          <TransactionList transacoes={transacoes} onDelete={handleExcluir} />
+          <TransactionList transacoes={transacoes} onDelete={handleExcluir} limit={7} />
         </div>
       </div>
     </main>
