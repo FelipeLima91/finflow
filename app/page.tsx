@@ -15,7 +15,10 @@ export default function Home() {
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   async function fetchTransacoes() {
-    const { data } = await supabase.from("transactions").select("*");
+    const { data } = await supabase
+      .from("transactions")
+      .select("*")
+      .order("date", { ascending: false });
     setTransacoes(data || []);
   }
 
