@@ -22,7 +22,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const defaultCategories = [
+const expenseCategories = [
   "Alimentação",
   "Assinaturas",
   "Bares e Restaurantes",
@@ -33,6 +33,17 @@ const defaultCategories = [
   "Saúde",
   "Transporte",
   "Viagem",
+  "Beleza",
+  "Outros",
+  "Banco",
+];
+
+const incomeCategories = [
+  "Salário",
+  "Reembolso",
+  "Dividendos",
+  "Doação",
+  "Outros",
 ];
 
 interface NewTransactionFormProps {
@@ -47,6 +58,14 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
   const [description, setDescription] = React.useState("");
   const [type, setType] = React.useState<"entrada" | "saida">("saida");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  // Seleciona categorias baseado no tipo de transação
+  const activeCategories = type === "entrada" ? incomeCategories : expenseCategories;
+
+  // Limpa categoria ao trocar tipo
+  React.useEffect(() => {
+    setCategory("");
+  }, [type]);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -180,7 +199,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
                       </button>
                     </CommandEmpty>
                     <CommandGroup>
-                      {defaultCategories.map((item) => (
+                      {activeCategories.map((item) => (
                         <CommandItem
                           key={item}
                           value={item}
