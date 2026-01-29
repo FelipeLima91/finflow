@@ -1,5 +1,6 @@
 "use client";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { NewTransactionForm } from "@/components/new-transaction-form";
 import { SummaryCards } from "@/components/summary-cards";
 import { TransactionList } from "@/components/transaction-list";
@@ -94,23 +95,26 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50 p-2 sm:p-4 md:p-8">
-      <div className="mx-auto max-w-6xl space-y-8">
-        {/* CABEÇALHO */}
-        <Header />
+    <div className="min-h-screen flex flex-col bg-zinc-50">
+      <main className="flex-1 p-2 sm:p-4 md:p-8">
+        <div className="mx-auto max-w-6xl space-y-8">
+          {/* CABEÇALHO */}
+          <Header />
 
-        {/* CARDS DE RESUMO */}
-        <SummaryCards transacoes={transacoes} />
+          {/* CARDS DE RESUMO */}
+          <SummaryCards transacoes={transacoes} />
 
-        {/* ÁREA PRINCIPAL: FORMULÁRIO E TABELA */}
-        <div className="grid gap-4 md:grid-cols-12">
-          {/* COLUNA DA ESQUERDA: NOVA TRANSAÇÃO */}
-          <NewTransactionForm onSave={handleSalvar} />
+          {/* ÁREA PRINCIPAL: FORMULÁRIO E TABELA */}
+          <div className="grid gap-4 md:grid-cols-12">
+            {/* COLUNA DA ESQUERDA: NOVA TRANSAÇÃO */}
+            <NewTransactionForm onSave={handleSalvar} />
 
-          {/* COLUNA DA DIREITA: HISTÓRICO */}
-          <TransactionList transacoes={transacoes} onDelete={handleExcluir} limit={7} />
+            {/* COLUNA DA DIREITA: HISTÓRICO */}
+            <TransactionList transacoes={transacoes} onDelete={handleExcluir} limit={7} />
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }
