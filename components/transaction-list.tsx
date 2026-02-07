@@ -49,6 +49,8 @@ import {
   Scissors,
   MoreHorizontal,
   Landmark,
+  TrendingUp,
+  Shirt,
 } from "lucide-react";
 
 interface TransactionListProps {
@@ -63,10 +65,12 @@ const categoryIcons: { [key: string]: React.ReactNode } = {
   "Bares e Restaurantes": <Beer className="h-4 w-4" />,
   Casa: <Home className="h-4 w-4" />,
   Educação: <GraduationCap className="h-4 w-4" />,
+  Investimento: <TrendingUp className="h-4 w-4" />,
   Lazer: <Gamepad2 className="h-4 w-4" />,
   Mercado: <ShoppingBasket className="h-4 w-4" />,
   Saúde: <HeartPulse className="h-4 w-4" />,
   Transporte: <Car className="h-4 w-4" />,
+  Vestuário: <Shirt className="h-4 w-4" />,
   Viagem: <Plane className="h-4 w-4" />,
   Beleza: <Scissors className="h-4 w-4" />,
   Outros: <MoreHorizontal className="h-4 w-4" />,

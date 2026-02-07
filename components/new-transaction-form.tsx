@@ -28,10 +28,12 @@ const expenseCategories = [
   "Bares e Restaurantes",
   "Casa",
   "Educação",
+  "Investimento",
   "Lazer",
   "Mercado",
   "Saúde",
   "Transporte",
+  "Vestuário",
   "Viagem",
   "Beleza",
   "Outros",
@@ -60,7 +62,8 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   // Seleciona categorias baseado no tipo de transação
-  const activeCategories = type === "entrada" ? incomeCategories : expenseCategories;
+  const activeCategories =
+    type === "entrada" ? incomeCategories : expenseCategories;
 
   // Limpa categoria ao trocar tipo
   React.useEffect(() => {
