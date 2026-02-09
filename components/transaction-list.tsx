@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/popover";
 
 import { Transaction } from "@/types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import {
   Pencil,
@@ -123,18 +123,7 @@ export function TransactionList({
     type: "expense" as "income" | "expense"
   });
 
-  // Limpa o estado de edição se sair do modo de edição
-  useEffect(() => {
-    if (!isEditing) {
-        setEditingId(null);
-    }
-  }, [isEditing]);
-
-  useEffect(() => {
-    if (!isEditingModal) {
-        setEditingId(null);
-    }
-  }, [isEditingModal]);
+  /* Limpeza de estado movida para os handlers de toggle */
 
   const startEditing = (t: Transaction) => {
     setEditingId(t.id);
@@ -176,6 +165,18 @@ export function TransactionList({
       await onDelete(deleteId);
       setDeleteId(null);
     }
+  };
+
+  const toggleEditingMode = () => {
+    const newState = !isEditing;
+    setIsEditing(newState);
+    if (!newState) setEditingId(null);
+  };
+
+  const toggleModalEditingMode = () => {
+    const newState = !isEditingModal;
+    setIsEditingModal(newState);
+    if (!newState) setEditingId(null);
   };
 
   const displayedTransactions = limit ? transacoes.slice(0, limit) : transacoes;
@@ -347,7 +348,7 @@ export function TransactionList({
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setIsEditing(!isEditing)}
+          onClick={toggleEditingMode}
           className={
             isEditing ? "text-primary bg-muted" : "text-muted-foreground"
           }
@@ -374,7 +375,7 @@ export function TransactionList({
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => setIsEditingModal(!isEditingModal)}
+                    onClick={toggleModalEditingMode}
                     className={
                       isEditingModal
                         ? "text-primary bg-muted"

@@ -38,6 +38,7 @@ Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver o 
 - **Banco de Dados**: PostgreSQL. O mais robusto e seguro do mundo open-source. Perfeito para lidar com dinheiro.
 - **Autenticação**: O próprio Supabase gerencia o login. Segurança e criptografia já vêm prontas.
 - **Estratégia**: Um único usuário para a família inteira acessar.
+- **Modo Visitante**: Também é possível testar o app sem login, usando LocalStorage como armazenamento temporário.
 
 ### 4. 🏠 A Casa (Hospedagem/Deploy)
 
@@ -74,6 +75,17 @@ O app utiliza o poder do Supabase para gerenciar todas as transações em tempo 
     - É possível alterar descrição, valor e data diretamente na tabela.
     - As alterações são salvas clicando no ícone de confirmação.
 
+### 🔀 Camada de Abstração (TransactionService)
+
+Para suportar o Modo Visitante, o app usa uma **camada de serviço** que abstrai o armazenamento:
+
+| Serviço                      | Armazena em           | Quando é usado      |
+| ---------------------------- | --------------------- | ------------------- |
+| `SupabaseTransactionService` | PostgreSQL (Supabase) | Usuário autenticado |
+| `LocalTransactionService`    | `localStorage`        | Modo Visitante      |
+
+A página principal (`page.tsx`) não sabe qual backend está usando — ela apenas chama `service.create()`, `service.getAll()`, etc.
+
 ---
 
 ## ✨ Funcionalidades do App
@@ -93,6 +105,16 @@ Preencha o formulário na esquerda com:
 2.  Dois ícones aparecerão em cada linha: **Lápis (Editar)** e **Lixeira (Excluir)**.
 3.  **Para Editar**: Clique no lápis da linha, altere os dados nos campos e clique no "Check" para salvar.
 4.  **Para Excluir**: Clique na lixeira e confirme a ação no modal.
+
+### 👤 Modo Visitante
+
+É possível testar o app **sem criar conta**:
+
+1. Na tela de login, clique em **"Entrar como Visitante"**.
+2. Use o app normalmente — crie, edite e exclua transações.
+3. Os dados ficam salvos apenas **neste navegador** (LocalStorage).
+4. Um banner amarelo indica que você está em modo temporário.
+5. Os dados **expiram automaticamente após 24 horas** ou ao clicar em "Sair".
 
 ---
 

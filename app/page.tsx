@@ -9,70 +9,96 @@ import { supabase } from "@/lib/supabase";
 import { Transaction } from "@/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { LocalTransactionService, SupabaseTransactionService, TransactionService } from "@/services/transactionService";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
   const [transacoes, setTransacoes] = useState<Transaction[]>([]);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
+  
+  // Serviço dinâmico (será definido no useEffect)
+  const [service, setService] = useState<TransactionService | null>(null);
 
-  async function fetchTransacoes() {
-    const { data } = await supabase
-      .from("transactions")
-      .select("*")
-      .order("date", { ascending: false });
+  async function fetchTransacoes(svc: TransactionService) {
+    const data = await svc.getAll();
     setTransacoes(data || []);
   }
 
   async function handleSalvar(dadosDoFormulario: any) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { error } = await supabase
-      .from("transactions")
-      .insert({ ...dadosDoFormulario, user_id: user.id });
-    if (error) {
-      console.error(error);
-      alert("Erro ao salvar");
-    } else {
-      await fetchTransacoes();
+    if (!service) return;
+    
+    try {
+        await service.create(dadosDoFormulario);
+        await fetchTransacoes(service);
+    } catch (error) {
+        console.error(error);
+        alert("Erro ao salvar");
     }
   }
 
   async function handleExcluir(id: string) {
-    await supabase.from("transactions").delete().eq("id", id);
-    fetchTransacoes();
+    if (!service) return;
+    await service.delete(id);
+    fetchTransacoes(service);
   }
 
   async function handleUpdate(id: string, transaction: Partial<Transaction>) {
-    const { error } = await supabase
-      .from("transactions")
-      .update(transaction)
-      .eq("id", id);
-      
-    if (error) {
-      console.error(error);
-      alert("Erro ao atualizar a transação");
-    } else {
-      await fetchTransacoes();
+    if (!service) return;
+
+    try {
+        await service.update(id, transaction);
+        await fetchTransacoes(service);
+    } catch (error) {
+        console.error(error);
+        alert("Erro ao atualizar a transação");
     }
   }
 
+  const handleLogout = async () => {
+    if (isGuest) {
+        localStorage.removeItem("isGuest");
+        localStorage.removeItem("finflow_guest_transactions");
+        localStorage.removeItem("finflow_guest_session_start");
+        router.replace("/login");
+    } else {
+        await supabase.auth.signOut();
+        router.replace("/login");
+    }
+  };
+
   useEffect(() => {
     async function checkUser() {
+      // 1. Verifica se é visitante
+      const guestMode = localStorage.getItem("isGuest") === "true";
+      
+      if (guestMode) {
+          setIsGuest(true);
+          const svc = LocalTransactionService;
+          setService(svc);
+          await fetchTransacoes(svc);
+          setIsLoadingUser(false);
+          return;
+      }
+
+      // 2. Verifica se é usuário logado
       const {
         data: { session },
       } = await supabase.auth.getSession();
+
       if (!session) {
         router.replace("/login");
       } else {
-        await fetchTransacoes();
+        const svc = SupabaseTransactionService;
+        setService(svc);
+        await fetchTransacoes(svc);
         setIsLoadingUser(false);
       }
     }
     checkUser();
-  }, []);
+  }, [router]);
 
   if (isLoadingUser) {
     return (
@@ -113,7 +139,19 @@ export default function Home() {
       <main className="flex-1 p-2 sm:p-4 md:p-8">
         <div className="mx-auto max-w-6xl space-y-8">
           {/* CABEÇALHO */}
-          <Header />
+          <div className="flex flex-col gap-4">
+            <Header isGuest={isGuest} />
+            {isGuest && (
+                <div className="bg-amber-100 border border-amber-200 text-amber-800 px-4 py-2 rounded-md flex justify-between items-center text-sm">
+                    <span>
+                        <strong>Modo Visitante:</strong> Seus dados são salvos apenas neste navegador e expiram em 24h.
+                    </span>
+                    <Button variant="outline" size="sm" onClick={handleLogout} className="border-amber-300 hover:bg-amber-200 text-amber-900 h-8">
+                        <LogOut className="mr-2 h-3 w-3" /> Sair
+                    </Button>
+                </div>
+            )}
+          </div>
 
           {/* CARDS DE RESUMO */}
           <SummaryCards transacoes={transacoes} />
