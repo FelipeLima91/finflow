@@ -69,6 +69,11 @@ O app utiliza o poder do Supabase para gerenciar todas as transações em tempo 
     - Ao abrir o app, buscamos as últimas transações automaticamente.
     - O saldo e os cards de resumo são calculados com base nesses dados vivos.
 
+4.  **Edição (`Update`)**:
+    - Ao ativar o Modo de Edição (lápis), ícones adicionais aparecem.
+    - É possível alterar descrição, valor e data diretamente na tabela.
+    - As alterações são salvas clicando no ícone de confirmação.
+
 ---
 
 ## ✨ Funcionalidades do App
@@ -82,11 +87,12 @@ Preencha o formulário na esquerda com:
 - **Categoria**: Classifique para organizar (Alimentação, Casa, Lazer, etc).
 - **Tipo**: Entrada (+) ou Saída (-).
 
-### 🗑️ Excluir Transação
+### ✏️ Editar e Excluir Transação
 
-1.  Na lista de movimentações, clique no **ícone de lápis** (✏️) no cabeçalho.
-2.  Ícones de **lixeira** (🗑️) aparecerão em cada linha.
-3.  Clique na lixeira desejada e confirme a ação no modal.
+1.  Na lista de movimentações, clique no **ícone de lápis** no cabeçalho.
+2.  Dois ícones aparecerão em cada linha: **Lápis (Editar)** e **Lixeira (Excluir)**.
+3.  **Para Editar**: Clique no lápis da linha, altere os dados nos campos e clique no "Check" para salvar.
+4.  **Para Excluir**: Clique na lixeira e confirme a ação no modal.
 
 ---
 
