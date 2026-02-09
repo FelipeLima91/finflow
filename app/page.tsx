@@ -45,6 +45,20 @@ export default function Home() {
     fetchTransacoes();
   }
 
+  async function handleUpdate(id: string, transaction: Partial<Transaction>) {
+    const { error } = await supabase
+      .from("transactions")
+      .update(transaction)
+      .eq("id", id);
+      
+    if (error) {
+      console.error(error);
+      alert("Erro ao atualizar a transação");
+    } else {
+      await fetchTransacoes();
+    }
+  }
+
   useEffect(() => {
     async function checkUser() {
       const {
@@ -110,7 +124,12 @@ export default function Home() {
             <NewTransactionForm onSave={handleSalvar} />
 
             {/* COLUNA DA DIREITA: HISTÓRICO */}
-            <TransactionList transacoes={transacoes} onDelete={handleExcluir} limit={7} />
+            <TransactionList 
+              transacoes={transacoes} 
+              onDelete={handleExcluir} 
+              onUpdate={handleUpdate}
+              limit={7} 
+            />
           </div>
         </div>
       </main>
