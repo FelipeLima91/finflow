@@ -277,32 +277,55 @@ const handleDelete = async () => {
 
 ---
 
-## 🔄 6. UPDATE (Atualização - Não Implementado)
+## 🔄 6. UPDATE (Atualização de Dados)
 
-> [!NOTE]
-> Atualmente, o FinFlow não possui funcionalidade de **editar** transações.
-> Para implementar, seria necessário:
+> **Arquivos:** `app/page.tsx` + `components/transaction-list.tsx`
 
-### Passos para Implementar UPDATE:
+### 6.1 Função de Atualização (Backend)
 
-1. **Criar um formulário de edição** (similar ao de criação)
-2. **Adicionar função `handleAtualizar`:**
+Em `app/page.tsx`, adicionamos a função `handleUpdate` que se comunica com o Supabase:
 
 ```typescript
-async function handleAtualizar(id: string, novosDados: Partial<Transaction>) {
+async function handleUpdate(id: string, transaction: Partial<Transaction>) {
   const { error } = await supabase
     .from("transactions")
-    .update(novosDados) // Dados a atualizar
-    .eq("id", id); // WHERE id = ?
+    .update(transaction) // Dados novos
+    .eq("id", id); // Qual linha atualizar
 
   if (!error) {
-    await fetchTransacoes();
+    await fetchTransacoes(); // Atualiza a tela
   }
 }
 ```
 
-3. **Adicionar botão de edição** ao lado do botão de exclusão
-4. **Abrir modal** com os dados pré-preenchidos
+### 6.2 Edição na Interface (Frontend)
+
+No componente `TransactionList`, implementamos a **Edição Inline** (direto na tabela):
+
+1.  **Estado Local:** O componente sabe qual linha está sendo editada (`editingId`).
+2.  **Renderização Condicional:**
+    - Se a linha **NÃO** está em edição: Mostra texto apenas.
+    - Se a linha **ESTÁ** em edição: Mostra Inputs (`<input>`).
+3.  **Botões de Ação:**
+    - _Modo Leitura_: Botão Lápis (✏️) inicia a edição.
+    - _Modo Edição_: Botão Salvar (✅) chama `handleUpdate` e Botão Cancelar (❌) descarta mudanças.
+
+```typescript
+// Exemplo simplificado da lógica no TransactionList
+{editingId === transaction.id ? (
+  // Mostra Inputs e Botão Salvar
+  <>
+    <Input value={editForm.description} ... />
+    <Button onClick={saveEditing}>Salvar</Button>
+  </>
+) : (
+  // Mostra Texto e Botão Editar
+  <>
+    <span>{transaction.description}</span>
+    <Button onClick={() => startEditing(transaction)}>Editar</Button>
+  </>
+)}
+```
 
 ---
 
@@ -312,7 +335,7 @@ async function handleAtualizar(id: string, novosDados: Partial<Transaction>) {
 | ---------- | --------------- | ------------------------------ |
 | **CREATE** | `.insert()`     | `page.tsx` → `handleSalvar`    |
 | **READ**   | `.select()`     | `page.tsx` → `fetchTransacoes` |
-| **UPDATE** | `.update()`     | ❌ Não implementado            |
+| **UPDATE** | `.update()`     | `page.tsx` → `handleUpdate`    |
 | **DELETE** | `.delete()`     | `page.tsx` → `handleExcluir`   |
 
 ---

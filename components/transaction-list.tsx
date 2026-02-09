@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -31,7 +32,7 @@ import {
 } from "@/components/ui/popover";
 
 import { Transaction } from "@/types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import {
   Pencil,
@@ -49,11 +50,16 @@ import {
   Scissors,
   MoreHorizontal,
   Landmark,
+  TrendingUp,
+  Shirt,
+  Check,
+  X,
 } from "lucide-react";
 
 interface TransactionListProps {
   transacoes: Transaction[];
   onDelete: (id: string) => void;
+  onUpdate: (id: string, transaction: Partial<Transaction>) => Promise<void>;
   limit?: number;
 }
 
@@ -63,10 +69,12 @@ const categoryIcons: { [key: string]: React.ReactNode } = {
   "Bares e Restaurantes": <Beer className="h-4 w-4" />,
   Casa: <Home className="h-4 w-4" />,
   Educação: <GraduationCap className="h-4 w-4" />,
+  Investimento: <TrendingUp className="h-4 w-4" />,
   Lazer: <Gamepad2 className="h-4 w-4" />,
   Mercado: <ShoppingBasket className="h-4 w-4" />,
   Saúde: <HeartPulse className="h-4 w-4" />,
   Transporte: <Car className="h-4 w-4" />,
+  Vestuário: <Shirt className="h-4 w-4" />,
   Viagem: <Plane className="h-4 w-4" />,
   Beleza: <Scissors className="h-4 w-4" />,
   Outros: <MoreHorizontal className="h-4 w-4" />,
@@ -96,13 +104,68 @@ function groupTransactionsByMonth(transactions: Transaction[]) {
 }
 
 export function TransactionList({
-  transacoes,
-  onDelete,
-  limit,
-}: TransactionListProps) {
+    transacoes,
+    onDelete,
+    onUpdate,
+    limit,
+  }: TransactionListProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingModal, setIsEditingModal] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  
+  // Estado para edição inline
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({
+    description: "",
+    amount: "",
+    category: "",
+    date: "",
+    type: "expense" as "income" | "expense"
+  });
+
+  // Limpa o estado de edição se sair do modo de edição
+  useEffect(() => {
+    if (!isEditing) {
+        setEditingId(null);
+    }
+  }, [isEditing]);
+
+  useEffect(() => {
+    if (!isEditingModal) {
+        setEditingId(null);
+    }
+  }, [isEditingModal]);
+
+  const startEditing = (t: Transaction) => {
+    setEditingId(t.id);
+    setEditForm({
+      description: t.description,
+      amount: t.amount.toString(),
+      category: t.category,
+      date: t.date.split('T')[0],
+      type: t.type
+    });
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditForm({ description: "", amount: "", category: "", date: "", type: "expense" });
+  };
+
+  const saveEditing = async (id: string) => {
+    try {
+        await onUpdate(id, {
+            description: editForm.description,
+            amount: Number(editForm.amount),
+            category: editForm.category,
+            date: new Date(editForm.date).toISOString(),
+            type: editForm.type
+        });
+        setEditingId(null);
+    } catch (error) {
+        console.error("Erro ao atualizar", error);
+    }
+  };
 
   const confirmDelete = (id: string) => {
     setDeleteId(id);
@@ -136,6 +199,53 @@ export function TransactionList({
       <TableBody>
         {data.map((transaction) => (
           <TableRow key={transaction.id}>
+            {editingId === transaction.id ? (
+              // MODO EDIÇÃO
+              <>
+                <TableCell>
+                  <Input 
+                    value={editForm.description}
+                    onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                  />
+                </TableCell>
+                <TableCell>
+                  <select
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    value={editForm.category}
+                    onChange={(e) => setEditForm({...editForm, category: e.target.value})}
+                  >
+                    {Object.keys(categoryIcons).sort().map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </TableCell>
+                <TableCell>
+                   <Input 
+                    type="date"
+                    value={editForm.date}
+                    onChange={(e) => setEditForm({...editForm, date: e.target.value})}
+                  />
+                </TableCell>
+                <TableCell>
+                   <Input 
+                    type="number"
+                    step="0.01"
+                    value={editForm.amount}
+                    onChange={(e) => setEditForm({...editForm, amount: e.target.value})}
+                  />
+                </TableCell>
+                <TableCell className="py-0 flex items-center gap-2">
+                   <Button variant="ghost" size="icon-sm" className="text-green-600 hover:text-green-700 hover:bg-green-50" onClick={() => saveEditing(transaction.id)}>
+                      <Check className="h-4 w-4" />
+                   </Button>
+                   <Button variant="ghost" size="icon-sm" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={cancelEditing}>
+                      <X className="h-4 w-4" />
+                   </Button>
+                </TableCell>
+              </>
+            ) : (
+                // MODO VISUALIZAÇÃO (Original)
+              <>
             <TableCell className="font-medium">
               {transaction.description.length > 15 ? (
                 <Popover>
@@ -193,7 +303,15 @@ export function TransactionList({
               }).format(transaction.amount)}
             </TableCell>
             {isEditingResult && (
-              <TableCell className="py-0">
+              <TableCell className="py-0 flex items-center gap-1">
+                 <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  onClick={() => startEditing(transaction)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
                 <Button
                   variant="ghost"
                   size="icon-sm"
@@ -203,6 +321,8 @@ export function TransactionList({
                   <Trash className="h-4 w-4" />
                 </Button>
               </TableCell>
+            )}
+            </>
             )}
           </TableRow>
         ))}
