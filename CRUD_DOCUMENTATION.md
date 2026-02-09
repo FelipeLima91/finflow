@@ -1,6 +1,6 @@
 # 📚 Documentação CRUD - FinFlow
 
-Esta documentação explica **passo a passo** como o sistema de CRUD (Create, Read, Update, Delete) funciona no projeto FinFlow, uma aplicação de controle financeiro pessoal.
+Esta documentação explica **passo a passo** como o sistema de CRUD (Create, Read, Update, Delete) funciona no projeto FinFlow, uma aplicação de controle financeiro pessoal. O sistema suporta dois modos: **Usuário Autenticado** (Supabase) e **Modo Visitante** (LocalStorage).
 
 ---
 
@@ -20,14 +20,19 @@ O FinFlow utiliza as seguintes tecnologias:
 ```
 finflow/
 ├── app/
-│   └── page.tsx              # 🎯 Página principal (orquestra o CRUD)
+│   ├── page.tsx                 # 🎯 Página principal (orquestra o CRUD)
+│   └── login/
+│       └── page.tsx             # 🔐 Tela de login + botão Visitante
 ├── components/
-│   ├── new-transaction-form.tsx  # ✏️ Formulário de criação
-│   └── transaction-list.tsx      # 📋 Listagem + exclusão
+│   ├── header.tsx               # 🏷️ Cabeçalho (exibe usuário/visitante)
+│   ├── new-transaction-form.tsx # ✏️ Formulário de criação
+│   └── transaction-list.tsx     # 📋 Listagem + edição + exclusão
+├── services/
+│   └── transactionService.ts   # 🔀 Camada de abstração (Supabase ou LocalStorage)
 ├── lib/
-│   └── supabase.ts           # 🔌 Conexão com banco de dados
+│   └── supabase.ts             # 🔌 Conexão com banco de dados
 └── types/
-    └── index.ts              # 📝 Definição do modelo Transaction
+    └── index.ts                # 📝 Definição do modelo Transaction
 ```
 
 ---
@@ -80,20 +85,64 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 
 ---
 
+## 🔀 2.5. CAMADA DE SERVIÇO (TransactionService)
+
+> **Arquivo:** `services/transactionService.ts`
+
+Para suportar o **Modo Visitante**, criamos uma abstração que permite que a página principal funcione da mesma forma independente de onde os dados são salvos:
+
+```typescript
+export interface TransactionService {
+  getAll: () => Promise<Transaction[]>;
+  create: (data: Omit<Transaction, "id">) => Promise<void>;
+  update: (id: string, data: Partial<Transaction>) => Promise<void>;
+  delete: (id: string) => Promise<void>;
+}
+```
+
+### Duas implementações:
+
+| Implementação                | Armazena em               | Quando é usada      |
+| ---------------------------- | ------------------------- | ------------------- |
+| `SupabaseTransactionService` | PostgreSQL (Supabase)     | Usuário autenticado |
+| `LocalTransactionService`    | localStorage do navegador | Modo Visitante      |
+
+### `LocalTransactionService` — Detalhes:
+
+- **Simula delay de rede** (300ms) para uma experiência realista
+- **Expiração automática** de 24 horas — após esse período os dados são apagados
+- Usa `crypto.randomUUID()` para gerar IDs compatíveis com a interface
+
+### 💡 Por que essa abstração?
+
+A `page.tsx` não sabe se está falando com o Supabase ou o LocalStorage. Ela apenas chama `service.create()`, `service.getAll()`, etc. Isso é o **Padrão Strategy** na prática:
+
+```typescript
+// Em page.tsx — a mesma lógica funciona para ambos os modos
+const [service, setService] = useState<TransactionService | null>(null);
+
+// No useEffect, decide qual serviço usar:
+if (guestMode) {
+  setService(LocalTransactionService); // LocalStorage
+} else {
+  setService(SupabaseTransactionService); // Supabase
+}
+```
+
+---
+
 ## 📖 3. READ (Leitura de Dados)
 
 > **Arquivo:** `app/page.tsx`
 
 ### Função `fetchTransacoes`
 
-```typescript
-async function fetchTransacoes() {
-  const { data } = await supabase
-    .from("transactions") // Seleciona a tabela
-    .select("*") // Pega todas as colunas
-    .order("date", { ascending: false }); // Ordena por data (mais recente primeiro)
+Agora a leitura passa pelo serviço dinâmico:
 
-  setTransacoes(data || []); // Atualiza o estado React
+```typescript
+async function fetchTransacoes(svc: TransactionService) {
+  const data = await svc.getAll(); // Funciona com Supabase ou LocalStorage
+  setTransacoes(data || []);
 }
 ```
 
@@ -155,29 +204,20 @@ async function handleSubmit(e: React.FormEvent) {
 }
 ```
 
-### 4.3 Salvando no Banco
+### 4.3 Salvando (via Service)
 
-A função `handleSalvar` no `page.tsx` faz a inserção:
+A função `handleSalvar` no `page.tsx` agora usa o serviço dinâmico:
 
 ```typescript
 async function handleSalvar(dadosDoFormulario: any) {
-  // Pega o usuário logado
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return;
+  if (!service) return;
 
-  // Insere no banco
-  const { error } = await supabase.from("transactions").insert({
-    ...dadosDoFormulario, // Descrição, valor, categoria, etc.
-    user_id: user.id, // Vincula ao usuário
-  });
-
-  if (error) {
+  try {
+    await service.create(dadosDoFormulario); // Supabase ou LocalStorage
+    await fetchTransacoes(service); // Recarrega a lista
+  } catch (error) {
     console.error(error);
     alert("Erro ao salvar");
-  } else {
-    await fetchTransacoes(); // Recarrega a lista
   }
 }
 ```
@@ -225,12 +265,9 @@ async function handleSalvar(dadosDoFormulario: any) {
 
 ```typescript
 async function handleExcluir(id: string) {
-  await supabase
-    .from("transactions")
-    .delete() // Operação DELETE
-    .eq("id", id); // WHERE id = ?
-
-  fetchTransacoes(); // Recarrega a lista
+  if (!service) return;
+  await service.delete(id); // Funciona com Supabase ou LocalStorage
+  fetchTransacoes(service); // Recarrega a lista
 }
 ```
 
@@ -283,17 +320,18 @@ const handleDelete = async () => {
 
 ### 6.1 Função de Atualização (Backend)
 
-Em `app/page.tsx`, adicionamos a função `handleUpdate` que se comunica com o Supabase:
+Em `app/page.tsx`, a função `handleUpdate` usa o serviço dinâmico:
 
 ```typescript
 async function handleUpdate(id: string, transaction: Partial<Transaction>) {
-  const { error } = await supabase
-    .from("transactions")
-    .update(transaction) // Dados novos
-    .eq("id", id); // Qual linha atualizar
+  if (!service) return;
 
-  if (!error) {
-    await fetchTransacoes(); // Atualiza a tela
+  try {
+    await service.update(id, transaction); // Supabase ou LocalStorage
+    await fetchTransacoes(service); // Atualiza a tela
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao atualizar a transação");
   }
 }
 ```
@@ -331,12 +369,12 @@ No componente `TransactionList`, implementamos a **Edição Inline** (direto na 
 
 ## 🎯 7. RESUMO DAS OPERAÇÕES
 
-| Operação   | Método Supabase | Arquivo                        |
-| ---------- | --------------- | ------------------------------ |
-| **CREATE** | `.insert()`     | `page.tsx` → `handleSalvar`    |
-| **READ**   | `.select()`     | `page.tsx` → `fetchTransacoes` |
-| **UPDATE** | `.update()`     | `page.tsx` → `handleUpdate`    |
-| **DELETE** | `.delete()`     | `page.tsx` → `handleExcluir`   |
+| Operação   | Via Service        | Arquivo                        |
+| ---------- | ------------------ | ------------------------------ |
+| **CREATE** | `service.create()` | `page.tsx` → `handleSalvar`    |
+| **READ**   | `service.getAll()` | `page.tsx` → `fetchTransacoes` |
+| **UPDATE** | `service.update()` | `page.tsx` → `handleUpdate`    |
+| **DELETE** | `service.delete()` | `page.tsx` → `handleExcluir`   |
 
 ---
 
@@ -348,37 +386,69 @@ No componente `TransactionList`, implementamos a **Edição Inline** (direto na 
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │ Estados:                                             │    │
 │  │   - transacoes: Transaction[]                        │    │
+│  │   - service: TransactionService                      │    │
+│  │   - isGuest: boolean                                 │    │
 │  │                                                      │    │
-│  │ Funções CRUD:                                        │    │
-│  │   - fetchTransacoes()  → READ                        │    │
-│  │   - handleSalvar()     → CREATE                      │    │
-│  │   - handleExcluir()    → DELETE                      │    │
+│  │ Funções CRUD (via service):                          │    │
+│  │   - fetchTransacoes()  → service.getAll()            │    │
+│  │   - handleSalvar()     → service.create()            │    │
+│  │   - handleUpdate()     → service.update()            │    │
+│  │   - handleExcluir()    → service.delete()            │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                            │                                 │
 │            ┌───────────────┼───────────────┐                │
 │            ▼               ▼               ▼                │
 │  ┌─────────────────┐ ┌──────────────┐ ┌────────────────┐   │
 │  │ SummaryCards    │ │ NewTransaction│ │ TransactionList│   │
-│  │ (visualização)  │ │ Form (CREATE)│ │ (READ/DELETE)  │   │
+│  │ (visualização)  │ │ Form (CREATE)│ │ (CRUD completo)│   │
 │  └─────────────────┘ └──────────────┘ └────────────────┘   │
 └──────────────────────────────────────────────────────────────┘
                               │
-                              ▼
-                    ┌─────────────────┐
-                    │    Supabase     │
-                    │   (PostgreSQL)  │
-                    └─────────────────┘
+                    ┌─────────┴─────────┐
+                    ▼                   ▼
+          ┌─────────────────┐ ┌─────────────────┐
+          │    Supabase     │ │  LocalStorage   │
+          │  (Autenticado)  │ │   (Visitante)   │
+          └─────────────────┘ └─────────────────┘
 ```
 
 ---
 
-## 🚀 Próximos Passos de Estudo
+## 👤 9. MODO VISITANTE
+
+O app permite que novos usuários **testem a interface sem criar conta**.
+
+### Como Funciona:
+
+1. Na tela de login, o usuário clica em **"Entrar como Visitante"**
+2. `localStorage.setItem("isGuest", "true")` marca a sessão
+3. A `page.tsx` detecta o guest mode e usa `LocalTransactionService`
+4. Um **banner amarelo** informa que os dados são temporários
+5. O Header exibe **"Olá, Visitante"** em vez do email
+
+### Expiração e Limpeza:
+
+| Cenário              | O que acontece                                                                 |
+| -------------------- | ------------------------------------------------------------------------------ |
+| Usuário clica "Sair" | Remove `isGuest`, `finflow_guest_transactions` e `finflow_guest_session_start` |
+| 24 horas se passam   | `LocalTransactionService.getAll()` detecta e limpa automaticamente             |
+
+### Chaves no LocalStorage:
+
+| Chave                         | Propósito                                             |
+| ----------------------------- | ----------------------------------------------------- |
+| `isGuest`                     | Flag indicando modo visitante ativo                   |
+| `finflow_guest_transactions`  | Array JSON com as transações do visitante             |
+| `finflow_guest_session_start` | Timestamp de início da sessão (para expiração de 24h) |
+
+---
+
+## 🚀 10. Próximos Passos de Estudo
 
 1. **Autenticação:** Veja como o Supabase Auth protege as rotas
 2. **Validação:** Adicione validação de formulários com Zod ou React Hook Form
-3. **Edição:** Implemente a funcionalidade de UPDATE
-4. **Paginação:** Adicione paginação para listas grandes
-5. **Filtros:** Implemente filtros por data, categoria, etc.
+3. **Paginação:** Adicione paginação para listas grandes
+4. **Filtros:** Implemente filtros por data, categoria, etc.
 
 ---
 

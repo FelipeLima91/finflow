@@ -5,11 +5,12 @@ import { Button } from "./ui/button";
 import { LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export function Header() {
+export function Header({ isGuest }: { isGuest?: boolean }) {
   const router = useRouter();
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
+    if (isGuest) return;
     async function getUser() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -17,7 +18,7 @@ export function Header() {
       }
     }
     getUser();
-  }, []);
+  }, [isGuest]);
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -36,13 +37,17 @@ export function Header() {
       </div>
       
       <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-4">
-        {userEmail && (
+        {isGuest ? (
+          <span className="text-sm text-zinc-500">Olá, Visitante</span>
+        ) : userEmail ? (
           <span className="text-sm text-zinc-500">Olá, {userEmail}</span>
+        ) : null}
+        {!isGuest && (
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Sair
+          </Button>
         )}
-        <Button variant="outline" size="sm" onClick={handleLogout}>
-          <LogOut className="mr-2 h-4 w-4" />
-          Sair
-        </Button>
       </div>
     </div>
   );
