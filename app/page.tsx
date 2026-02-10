@@ -102,31 +102,31 @@ export default function Home() {
 
   if (isLoadingUser) {
     return (
-      <main className="min-h-screen w-full bg-zinc-50 p-4 md:p-8 overflow-x-hidden">
+      <main className="min-h-screen w-full bg-zinc-50 dark:bg-zinc-950 p-4 md:p-8 overflow-x-hidden">
         <div className="mx-auto max-w-6xl space-y-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Skeleton className="h-8 w-8 rounded bg-zinc-200" />
-              <Skeleton className="h-6 w-32 bg-zinc-200" />
+              <Skeleton className="h-8 w-8 rounded bg-zinc-200 dark:bg-zinc-800" />
+              <Skeleton className="h-6 w-32 bg-zinc-200 dark:bg-zinc-800" />
             </div>
-            <Skeleton className="h-9 w-20 bg-zinc-200" />
+            <Skeleton className="h-9 w-20 bg-zinc-200 dark:bg-zinc-800" />
           </div>
           {/* Skeleton dos Cards de Resumo */}
           <div className="grid gap-4 md:grid-cols-3">
-            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200" />
-            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200" />
-            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200" />
+            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
           </div>
 
           {/* Skeleton do Formulário e da Tabela */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
             {/* Lado Esquerdo (Formulário) */}
             <div className="md:col-span-4">
-              <Skeleton className="h-[400px] w-full rounded-xl bg-zinc-200" />
+              <Skeleton className="h-[400px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
             </div>
             {/* Lado Direito (Lista) */}
             <div className="md:col-span-8">
-              <Skeleton className="h-[400px] w-full rounded-xl bg-zinc-200" />
+              <Skeleton className="h-[400px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
             </div>
           </div>
         </div>
@@ -135,18 +135,18 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50">
+    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
       <main className="flex-1 p-2 sm:p-4 md:p-8">
         <div className="mx-auto max-w-6xl space-y-8">
           {/* CABEÇALHO */}
           <div className="flex flex-col gap-4">
             <Header isGuest={isGuest} />
             {isGuest && (
-                <div className="bg-amber-100 border border-amber-200 text-amber-800 px-4 py-2 rounded-md flex justify-between items-center text-sm">
+                <div className="bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-200 px-4 py-2 rounded-md flex justify-between items-center text-sm">
                     <span>
                         <strong>Modo Visitante:</strong> Seus dados são salvos apenas neste navegador e expiram em 24h.
                     </span>
-                    <Button variant="outline" size="sm" onClick={handleLogout} className="border-amber-300 hover:bg-amber-200 text-amber-900 h-8">
+                    <Button variant="outline" size="sm" onClick={handleLogout} className="border-amber-300 dark:border-amber-600 hover:bg-amber-200 dark:hover:bg-amber-800/40 text-amber-900 dark:text-amber-100 h-8">
                         <LogOut className="mr-2 h-3 w-3" /> Sair
                     </Button>
                 </div>

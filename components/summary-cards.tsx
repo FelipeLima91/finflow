@@ -275,19 +275,19 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
         <Card
           className={`min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
             balance(transacoes) >= 0
-              ? "hover:border-zinc-400"
+              ? "hover:border-zinc-400 dark:hover:border-zinc-600"
               : "hover:border-red-300"
           }`}
           onClick={() => setSaldoOpen(true)}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Saldo Atual</CardTitle>
-            <DollarSign className="h-4 w-4 text-zinc-500" />
+            <DollarSign className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
           </CardHeader>
           <CardContent>
             <div
               className={`text-2xl font-bold ${
-                balance(transacoes) >= 0 ? "text-zinc-900" : "text-red-600"
+                balance(transacoes) >= 0 ? "text-zinc-900 dark:text-zinc-100" : "text-red-600"
               }`}
             >
               {formatCurrency(balance(transacoes))}
@@ -311,14 +311,14 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
           <div className="space-y-6">
             {/* Filtro de Período */}
-            <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
+            <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 mb-2">
               <Calendar className="h-4 w-4" />
               <span>Período:</span>
             </div>
             <PeriodFilterButtons value={entradaPeriod} onChange={setEntradaPeriod} />
 
             {/* Total de Entradas */}
-            <div className="text-center p-4 bg-emerald-50 rounded-lg">
+            <div className="text-center p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
               <p className="text-sm text-emerald-600 font-medium">
                 Total de Entradas ({periodLabels[entradaPeriod]})
               </p>
@@ -371,7 +371,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-[100px] flex items-center justify-center text-zinc-400">
+                <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
                   Sem dados de entradas neste período.
                 </div>
               )}
@@ -419,7 +419,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-[100px] flex items-center justify-center text-zinc-400">
+                <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
                   Sem dados de entradas neste período.
                 </div>
               )}
@@ -440,14 +440,14 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
           <div className="space-y-6">
             {/* Filtro de Período */}
-            <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
+            <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 mb-2">
               <Calendar className="h-4 w-4" />
               <span>Período:</span>
             </div>
             <PeriodFilterButtons value={saidaPeriod} onChange={setSaidaPeriod} />
 
             {/* Total de Saídas */}
-            <div className="text-center p-4 bg-rose-50 rounded-lg">
+            <div className="text-center p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg">
               <p className="text-sm text-rose-600 font-medium">
                 Total de Saídas ({periodLabels[saidaPeriod]})
               </p>
@@ -500,7 +500,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-[100px] flex items-center justify-center text-zinc-400">
+                <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
                   Sem dados de despesas neste período.
                 </div>
               )}
@@ -548,7 +548,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-[100px] flex items-center justify-center text-zinc-400">
+                <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
                   Sem dados de despesas neste período.
                 </div>
               )}
@@ -569,7 +569,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
           <div className="space-y-6">
             {/* Filtro de Período */}
-            <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
+            <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 mb-2">
               <Calendar className="h-4 w-4" />
               <span>Período:</span>
             </div>
@@ -579,8 +579,8 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
             <div
               className={`text-center p-6 rounded-xl ${
                 saldoAtual >= 0
-                  ? "bg-gradient-to-br from-emerald-50 to-emerald-100"
-                  : "bg-gradient-to-br from-red-50 to-red-100"
+                  ? "bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-900/30"
+                  : "bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-900/30"
               }`}
             >
               <div className="flex items-center justify-center gap-2 mb-2">
@@ -604,11 +604,11 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
               >
                 {formatCurrency(saldoAtual)}
               </p>
-              <p className="text-xs text-zinc-500 mt-1">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                 {periodLabels[saldoPeriod]}
               </p>
               {totalEntradas > 0 && (
-                <p className="text-sm text-zinc-500 mt-2">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
                   {saldoAtual >= 0
                     ? `Você está economizando ${((saldoAtual / totalEntradas) * 100).toFixed(1)}% das suas entradas`
                     : `Seus gastos excedem suas entradas em ${formatCurrency(Math.abs(saldoAtual))}`}
@@ -618,14 +618,14 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
             {/* Resumo Rápido */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-emerald-50 rounded-lg text-center">
+              <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-center">
                 <ArrowUpCircle className="h-5 w-5 text-emerald-600 mx-auto mb-1" />
                 <p className="text-xs text-emerald-600 font-medium">Entradas</p>
                 <p className="text-lg font-bold text-emerald-700">
                   {formatCurrency(totalEntradas)}
                 </p>
               </div>
-              <div className="p-4 bg-rose-50 rounded-lg text-center">
+              <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg text-center">
                 <ArrowDownCircle className="h-5 w-5 text-rose-600 mx-auto mb-1" />
                 <p className="text-xs text-rose-600 font-medium">Saídas</p>
                 <p className="text-lg font-bold text-rose-700">
@@ -671,7 +671,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-[100px] flex items-center justify-center text-zinc-400">
+                <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
                   Sem transações neste período.
                 </div>
               )}

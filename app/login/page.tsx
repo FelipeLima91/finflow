@@ -49,7 +49,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50">
+    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
       <main className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
@@ -86,14 +86,14 @@ export default function LoginPage() {
               </div>
 
               {error && (
-                <div className="text-sm text-red-500 text-center font-medium bg-red-50 p-2 rounded">
+                <div className="text-sm text-red-500 dark:text-red-400 text-center font-medium bg-red-50 dark:bg-red-900/30 p-2 rounded">
                   {error}
                 </div>
               )}
 
               <Button
                 type="submit"
-                className="w-full bg-zinc-900"
+                className="w-full bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
                 disabled={loading}
               >
                 <LogIn className="mr-2 h-4 w-4" />

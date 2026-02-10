@@ -236,10 +236,10 @@ export function TransactionList({
                   />
                 </TableCell>
                 <TableCell className="py-0 flex items-center gap-2">
-                   <Button variant="ghost" size="icon-sm" className="text-green-600 hover:text-green-700 hover:bg-green-50" onClick={() => saveEditing(transaction.id)}>
+                   <Button variant="ghost" size="icon-sm" className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20" onClick={() => saveEditing(transaction.id)}>
                       <Check className="h-4 w-4" />
                    </Button>
-                   <Button variant="ghost" size="icon-sm" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={cancelEditing}>
+                   <Button variant="ghost" size="icon-sm" className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={cancelEditing}>
                       <X className="h-4 w-4" />
                    </Button>
                 </TableCell>
@@ -308,7 +308,7 @@ export function TransactionList({
                  <Button
                   variant="ghost"
                   size="icon-sm"
-                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                   onClick={() => startEditing(transaction)}
                 >
                   <Pencil className="h-4 w-4" />
