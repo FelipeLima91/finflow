@@ -130,6 +130,53 @@ Como o código é aberto para aprendizado, a segurança funciona assim:
 
 ---
 
+## 🛠️ Configuração para Desenvolvedores (Clone)
+
+Se você clonou este repositório e quer rodar o projeto com seu próprio banco de dados:
+
+### 1. Configurando o Supabase (Padrão)
+
+O projeto vem configurado para usar o Supabase. Siga os passos:
+
+1.  Crie um projeto no [Supabase](https://supabase.com/).
+2.  Crie um arquivo `.env.local` na raiz do projeto com suas credenciais:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima
+```
+
+3.  No painel do Supabase (SQL Editor), rode o seguinte script para criar a tabela:
+
+```sql
+create table transactions (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users not null,
+  description text not null,
+  amount numeric not null,
+  type text check (type in ('income', 'expense')) not null,
+  category text not null,
+  date timestamp with time zone not null
+);
+
+-- Habilitar segurança (RLS)
+alter table transactions enable row level security;
+
+-- Política: Usuários só acessam seus próprios dados
+create policy "Users can CRUD their own rows"
+on transactions for all
+using (auth.uid() = user_id);
+```
+
+### 2. Usando Firebase ou Outros
+
+Graças à arquitetura limpa (Service Pattern) em `services/transactionService.ts`, você pode trocar o Supabase por Firebase, AWS Amplify ou até uma API própria.
+
+1.  Crie uma nova implementação da interface `TransactionService`.
+2.  No arquivo `app/page.tsx`, troque o `SupabaseTransactionService` pela sua nova implementação.
+
+---
+
 ## 📚 Saiba Mais
 
 Para aprender mais sobre as tecnologias usadas:
