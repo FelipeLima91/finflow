@@ -191,7 +191,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
                   <CommandList>
                     <CommandEmpty>
                       <button
-                        className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-zinc-100 cursor-pointer"
+                        className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
                         onClick={() => {
                           setCategory(inputValue);
                           setOpen(false);
@@ -233,7 +233,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
           <Button
             type="submit"
             disabled={isSubmitting || !description || !amount || !category}
-            className="w-full bg-zinc-900 hover:bg-zinc-800"
+            className="w-full bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
             <Plus className="mr-2 h-4 w-4" /> Adicionar
           </Button>

@@ -57,15 +57,15 @@ export default function DashboardPage() {
     .reverse() 
 
   return (
-    <main className="min-h-screen bg-zinc-50 p-4 md:p-8">
+    <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950 p-4 md:p-8">
       <div className="mx-auto max-w-6xl space-y-8">
         
         {/* Cabeçalho com botão de voltar */}
         <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-zinc-200 rounded-full transition">
-            <ArrowLeft className="h-6 w-6 text-zinc-900" />
+          <Link href="/" className="p-2 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-full transition">
+            <ArrowLeft className="h-6 w-6 text-zinc-900 dark:text-zinc-100" />
           </Link>
-          <h1 className="text-3xl font-bold text-zinc-900">Relatórios & Gráficos</h1>
+          <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Relatórios & Gráficos</h1>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2">
@@ -96,7 +96,7 @@ export default function DashboardPage() {
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-zinc-400">
+                <div className="h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
                   Sem dados de despesas ainda.
                 </div>
               )}
@@ -119,7 +119,7 @@ export default function DashboardPage() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-zinc-400">
+                <div className="h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
                   Sem dados de despesas ainda.
                 </div>
               )}
