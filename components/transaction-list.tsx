@@ -215,7 +215,10 @@ export function TransactionList({
             <span className="hidden md:inline">Categoria</span>
           </TableHead>
           <TableHead>Data</TableHead>
-          <TableHead className="text-right">Valor</TableHead>
+          <TableHead className="text-right">
+            <span className="md:hidden">R$</span>
+            <span className="hidden md:inline">Valor</span>
+          </TableHead>
           {isEditingResult && <TableHead className="w-[50px]">Ações</TableHead>}
         </TableRow>
       </TableHeader>
@@ -277,17 +280,26 @@ export function TransactionList({
               </span>
             </TableCell>
             <TableCell
-              className={`text-right ${
+              className={`text-right whitespace-nowrap ${
                 transaction.type === "income"
                   ? "text-emerald-600"
                   : "text-rose-600"
               }`}
             >
-
-              {new Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              }).format(transaction.amount)}
+              {/* Desktop: com R$ */}
+              <span className="hidden md:inline">
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(transaction.amount)}
+              </span>
+              {/* Mobile: sem R$ */}
+              <span className="md:hidden">
+                {new Intl.NumberFormat("pt-BR", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(transaction.amount)}
+              </span>
             </TableCell>
             {isEditingResult && (
               <TableCell className="py-0 flex items-center gap-1">
