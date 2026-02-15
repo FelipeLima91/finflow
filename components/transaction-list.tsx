@@ -393,7 +393,7 @@ export function TransactionList({
 
       {/* Modal de Edição */}
       <Dialog open={!!editingTransaction} onOpenChange={(open) => { if (!open) closeEditModal(); }}>
-        <DialogContent className="w-[95vw] max-w-[450px]">
+        <DialogContent className="w-[95vw] max-w-[450px]" onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>Editar Transação</DialogTitle>
           </DialogHeader>
