@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Transaction } from "@/types";
+import { parseLocalDate } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import {
   BarChart,
@@ -71,17 +72,17 @@ function filterByPeriod(transacoes: Transaction[], period: PeriodFilter): Transa
     case "30days": {
       const thirtyDaysAgo = new Date(today);
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      return transacoes.filter((t) => new Date(t.date) >= thirtyDaysAgo);
+      return transacoes.filter((t) => parseLocalDate(t.date) >= thirtyDaysAgo);
     }
     case "thisMonth": {
       const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      return transacoes.filter((t) => new Date(t.date) >= firstDayOfMonth);
+      return transacoes.filter((t) => parseLocalDate(t.date) >= firstDayOfMonth);
     }
     case "lastMonth": {
       const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
       return transacoes.filter((t) => {
-        const date = new Date(t.date);
+        const date = parseLocalDate(t.date);
         return date >= firstDayLastMonth && date <= lastDayLastMonth;
       });
     }
@@ -121,7 +122,7 @@ function groupByDay(
 ) {
   const filtered = transacoes.filter((t) => t.type === type);
   const grouped = filtered.reduce((acc, curr) => {
-    const dataFormatada = new Date(curr.date).toLocaleDateString("pt-BR", {
+    const dataFormatada = parseLocalDate(curr.date).toLocaleDateString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
     });

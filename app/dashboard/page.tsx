@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
+import { parseLocalDate } from "@/lib/utils"
 import { Transaction } from "@/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
@@ -43,7 +44,7 @@ export default function DashboardPage() {
     .filter(t => t.type === 'expense')
     .reduce((acc, curr) => {
       // Formata a data para "Dia/Mês" (ex: 18/01)
-      const dataFormatada = new Date(curr.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+      const dataFormatada = parseLocalDate(curr.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
       
       const found = acc.find(item => item.name === dataFormatada)
       if (found) {

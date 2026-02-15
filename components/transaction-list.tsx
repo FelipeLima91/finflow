@@ -1,5 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { parseLocalDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -21,6 +23,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -52,8 +55,6 @@ import {
   Landmark,
   TrendingUp,
   Shirt,
-  Check,
-  X,
 } from "lucide-react";
 
 interface TransactionListProps {
@@ -85,7 +86,7 @@ function groupTransactionsByMonth(transactions: Transaction[]) {
   const groups: { [key: string]: Transaction[] } = {};
 
   transactions.forEach((transaction) => {
-    const date = new Date(transaction.date);
+    const date = parseLocalDate(transaction.date);
     const monthYear = date.toLocaleString("pt-BR", {
       month: "long",
       year: "numeric",
@@ -113,8 +114,8 @@ export function TransactionList({
   const [isEditingModal, setIsEditingModal] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   
-  // Estado para edição inline
-  const [editingId, setEditingId] = useState<string | null>(null);
+  // Estado para edição via modal
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [editForm, setEditForm] = useState({
     description: "",
     amount: "",
@@ -123,34 +124,56 @@ export function TransactionList({
     type: "expense" as "income" | "expense"
   });
 
-  /* Limpeza de estado movida para os handlers de toggle */
+  const formatAmountToCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
 
-  const startEditing = (t: Transaction) => {
-    setEditingId(t.id);
+  const openEditModal = (t: Transaction) => {
+    setEditingTransaction(t);
     setEditForm({
       description: t.description,
-      amount: t.amount.toString(),
+      amount: formatAmountToCurrency(Number(t.amount)),
       category: t.category,
       date: t.date.split('T')[0],
       type: t.type
     });
   };
 
-  const cancelEditing = () => {
-    setEditingId(null);
+  const closeEditModal = () => {
+    setEditingTransaction(null);
     setEditForm({ description: "", amount: "", category: "", date: "", type: "expense" });
   };
 
-  const saveEditing = async (id: string) => {
+  const handleEditAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const cleanValue = e.target.value.replace(/\D/g, "");
+    if (!cleanValue) {
+      setEditForm({...editForm, amount: ""});
+      return;
+    }
+    const numericValue = Number(cleanValue) / 100;
+    const formatted = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(numericValue);
+    setEditForm({...editForm, amount: formatted});
+  };
+
+  const saveEditing = async () => {
+    if (!editingTransaction) return;
+    // Converte "R$ 1.200,50" de volta para 1200.50
+    const numericAmount = Number(editForm.amount.replace(/\D/g, "")) / 100;
     try {
-        await onUpdate(id, {
+        await onUpdate(editingTransaction.id, {
             description: editForm.description,
-            amount: Number(editForm.amount),
+            amount: numericAmount,
             category: editForm.category,
-            date: new Date(editForm.date).toISOString(),
+            date: editForm.date,
             type: editForm.type
         });
-        setEditingId(null);
+        closeEditModal();
     } catch (error) {
         console.error("Erro ao atualizar", error);
     }
@@ -164,19 +187,18 @@ export function TransactionList({
     if (deleteId) {
       await onDelete(deleteId);
       setDeleteId(null);
+      closeEditModal();
     }
   };
 
   const toggleEditingMode = () => {
     const newState = !isEditing;
     setIsEditing(newState);
-    if (!newState) setEditingId(null);
   };
 
   const toggleModalEditingMode = () => {
     const newState = !isEditingModal;
     setIsEditingModal(newState);
-    if (!newState) setEditingId(null);
   };
 
   const displayedTransactions = limit ? transacoes.slice(0, limit) : transacoes;
@@ -200,53 +222,6 @@ export function TransactionList({
       <TableBody>
         {data.map((transaction) => (
           <TableRow key={transaction.id}>
-            {editingId === transaction.id ? (
-              // MODO EDIÇÃO
-              <>
-                <TableCell>
-                  <Input 
-                    value={editForm.description}
-                    onChange={(e) => setEditForm({...editForm, description: e.target.value})}
-                  />
-                </TableCell>
-                <TableCell>
-                  <select
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    value={editForm.category}
-                    onChange={(e) => setEditForm({...editForm, category: e.target.value})}
-                  >
-                    {Object.keys(categoryIcons).sort().map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </TableCell>
-                <TableCell>
-                   <Input 
-                    type="date"
-                    value={editForm.date}
-                    onChange={(e) => setEditForm({...editForm, date: e.target.value})}
-                  />
-                </TableCell>
-                <TableCell>
-                   <Input 
-                    type="number"
-                    step="0.01"
-                    value={editForm.amount}
-                    onChange={(e) => setEditForm({...editForm, amount: e.target.value})}
-                  />
-                </TableCell>
-                <TableCell className="py-0 flex items-center gap-2">
-                   <Button variant="ghost" size="icon-sm" className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20" onClick={() => saveEditing(transaction.id)}>
-                      <Check className="h-4 w-4" />
-                   </Button>
-                   <Button variant="ghost" size="icon-sm" className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={cancelEditing}>
-                      <X className="h-4 w-4" />
-                   </Button>
-                </TableCell>
-              </>
-            ) : (
-                // MODO VISUALIZAÇÃO (Original)
-              <>
             <TableCell className="font-medium">
               {transaction.description.length > 15 ? (
                 <Popover>
@@ -287,8 +262,19 @@ export function TransactionList({
               </div>
               <span className="hidden md:inline">{transaction.category}</span>
             </TableCell>
-            <TableCell>
-              {new Date(transaction.date).toLocaleDateString("pt-BR")}
+            <TableCell className="whitespace-nowrap">
+              {/* Desktop (md+): dd/mm/aaaa */}
+              <span className="hidden md:inline">
+                {parseLocalDate(transaction.date).toLocaleDateString("pt-BR")}
+              </span>
+              {/* Mobile (sm): dd/mm/aa */}
+              <span className="hidden sm:inline md:hidden">
+                {parseLocalDate(transaction.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" })}
+              </span>
+              {/* Tela pequena (< sm): dd/mm */}
+              <span className="sm:hidden">
+                {parseLocalDate(transaction.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
+              </span>
             </TableCell>
             <TableCell
               className={`text-right ${
@@ -297,7 +283,7 @@ export function TransactionList({
                   : "text-rose-600"
               }`}
             >
-              {transaction.type === "expense" ? "- " : "+ "}
+
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
@@ -309,21 +295,11 @@ export function TransactionList({
                   variant="ghost"
                   size="icon-sm"
                   className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                  onClick={() => startEditing(transaction)}
+                  onClick={() => openEditModal(transaction)}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
-                  onClick={() => confirmDelete(transaction.id)}
-                >
-                  <Trash className="h-4 w-4" />
-                </Button>
               </TableCell>
-            )}
-            </>
             )}
           </TableRow>
         ))}
@@ -403,7 +379,93 @@ export function TransactionList({
         )}
       </CardContent>
 
-      {/* Componente do Modal de Exclusão */}
+      {/* Modal de Edição */}
+      <Dialog open={!!editingTransaction} onOpenChange={(open) => { if (!open) closeEditModal(); }}>
+        <DialogContent className="w-[95vw] max-w-[450px]">
+          <DialogHeader>
+            <DialogTitle>Editar Transação</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Descrição</Label>
+              <Input
+                id="edit-description"
+                value={editForm.description}
+                onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-amount">Valor</Label>
+                <Input
+                  id="edit-amount"
+                  type="text"
+                  placeholder="R$ 0,00"
+                  value={editForm.amount}
+                  onChange={handleEditAmountChange}
+                  maxLength={18}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-type">Tipo</Label>
+                <select
+                  id="edit-type"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  value={editForm.type}
+                  onChange={(e) => setEditForm({...editForm, type: e.target.value as "income" | "expense"})}
+                >
+                  <option value="expense">Saída</option>
+                  <option value="income">Entrada</option>
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-category">Categoria</Label>
+                <select
+                  id="edit-category"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  value={editForm.category}
+                  onChange={(e) => setEditForm({...editForm, category: e.target.value})}
+                >
+                  {Object.keys(categoryIcons).sort().map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-date">Data</Label>
+                <Input
+                  id="edit-date"
+                  type="date"
+                  value={editForm.date}
+                  onChange={(e) => setEditForm({...editForm, date: e.target.value})}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between gap-2">
+            <Button
+              variant="destructive"
+              onClick={() => editingTransaction && confirmDelete(editingTransaction.id)}
+              className="sm:mr-auto"
+            >
+              <Trash className="h-4 w-4 mr-2" />
+              Excluir
+            </Button>
+            <div className="flex flex-col-reverse sm:flex-row gap-2">
+              <Button variant="outline" onClick={closeEditModal}>
+                Cancelar
+              </Button>
+              <Button onClick={saveEditing}>
+                Salvar
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Confirmação de Exclusão */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

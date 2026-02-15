@@ -100,9 +100,10 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
     const numericAmount = Number(amount.replace(/\D/g, "")) / 100;
 
     const now = new Date();
-    // Log para depuração da data completa (horário local)
-    console.log("Enviando data completa (ISO):", now.toISOString());
-    console.log("Enviando data completa (Local):", now.toLocaleString());
+    // Formata a data LOCAL para evitar o bug de fuso horário com toISOString()
+    // toISOString() converte para UTC, o que pode mudar o dia (ex: 00:55 BRT → dia anterior em UTC)
+    const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    console.log("Enviando data local:", localDate);
 
     // Chama a função do Pai enviando os dados limpos
     await onSave({
@@ -110,7 +111,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
       amount: numericAmount,
       category,
       type: type === "entrada" ? "income" : "expense", // Traduz português -> inglês pro banco
-      date: now.toISOString(),
+      date: localDate,
     });
 
     // Limpa tudo depois de salvar
