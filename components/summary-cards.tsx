@@ -52,14 +52,27 @@ const CHART_COLORS = [
 ];
 
 // Tipos de filtro de período
-type PeriodFilter = "all" | "30days" | "thisMonth" | "lastMonth";
+type PeriodFilter = "all" | "30days" | "thisMonth" | string;
 
-const periodLabels: Record<PeriodFilter, string> = {
+const periodLabels: Record<string, string> = {
   all: "Tudo",
   "30days": "Últimos 30 dias",
   thisMonth: "Este mês",
-  lastMonth: "Mês passado",
 };
+
+const monthLabels = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+];
+
+function getPeriodLabel(period: PeriodFilter, options: { value: string; label: string }[]): string {
+  if (period === "all") return "Tudo";
+  if (period === "30days") return "Últimos 30 dias";
+  if (period === "thisMonth") return "Este mês";
+  
+  const option = options.find(opt => opt.value === period);
+  return option ? option.label : period;
+}
 
 // Função para filtrar transações por período
 function filterByPeriod(transacoes: Transaction[], period: PeriodFilter): Transaction[] {
@@ -67,6 +80,16 @@ function filterByPeriod(transacoes: Transaction[], period: PeriodFilter): Transa
   
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  if (period.includes('-')) {
+    const [year, month] = period.split('-').map(Number);
+    const firstDay = new Date(year, month - 1, 1);
+    const lastDay = new Date(year, month, 0);
+    return transacoes.filter((t) => {
+      const date = parseLocalDate(t.date);
+      return date >= firstDay && date <= lastDay;
+    });
+  }
   
   switch (period) {
     case "30days": {
@@ -77,14 +100,6 @@ function filterByPeriod(transacoes: Transaction[], period: PeriodFilter): Transa
     case "thisMonth": {
       const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       return transacoes.filter((t) => parseLocalDate(t.date) >= firstDayOfMonth);
-    }
-    case "lastMonth": {
-      const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-      return transacoes.filter((t) => {
-        const date = parseLocalDate(t.date);
-        return date >= firstDayLastMonth && date <= lastDayLastMonth;
-      });
     }
     default:
       return transacoes;
@@ -165,6 +180,28 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
   const [saidaPeriod, setSaidaPeriod] = useState<PeriodFilter>("30days");
   const [saldoPeriod, setSaldoPeriod] = useState<PeriodFilter>("30days");
 
+  // Gera opções de meses dinamicamente com base nas transações existentes
+  const dynamicMonthOptions = useMemo(() => {
+    const monthsSet = new Set<string>();
+    transacoes.forEach((t) => {
+      const date = parseLocalDate(t.date);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      monthsSet.add(`${year}-${month}`);
+    });
+
+    return Array.from(monthsSet)
+      .sort((a, b) => b.localeCompare(a)) // Mais recentes primeiro
+      .map((ym) => {
+        const [year, month] = ym.split("-");
+        const monthIndex = parseInt(month, 10) - 1;
+        return {
+          value: ym,
+          label: `${monthLabels[monthIndex]}/${year.slice(2)}`,
+        };
+      });
+  }, [transacoes]);
+
   // Transações filtradas por período
   const entradaTransacoes = useMemo(
     () => filterByPeriod(transacoes, entradaPeriod),
@@ -216,8 +253,8 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
     value: PeriodFilter;
     onChange: (v: PeriodFilter) => void;
   }) => (
-    <div className="flex flex-wrap gap-2 mb-4">
-      {(Object.keys(periodLabels) as PeriodFilter[]).map((period) => (
+    <div className="flex flex-wrap gap-2 mb-4 items-center">
+      {(["all", "30days", "thisMonth"] as const).map((period) => (
         <Button
           key={period}
           variant={value === period ? "default" : "outline"}
@@ -228,6 +265,23 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
           {periodLabels[period]}
         </Button>
       ))}
+
+      {dynamicMonthOptions.length > 0 && (
+        <select
+          className="flex h-8 w-fit rounded-md border border-input bg-background px-2 py-1 text-xs ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          value={value.includes("-") ? value : ""}
+          onChange={(e) => onChange(e.target.value)}
+        >
+          <option value="" disabled>
+            Selecionar mês...
+          </option>
+          {dynamicMonthOptions.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      )}
     </div>
   );
 
@@ -321,7 +375,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
             {/* Total de Entradas */}
             <div className="text-center p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
               <p className="text-sm text-emerald-600 font-medium">
-                Total de Entradas ({periodLabels[entradaPeriod]})
+                Total de Entradas ({getPeriodLabel(entradaPeriod, dynamicMonthOptions)})
               </p>
               <p className="text-3xl font-bold text-emerald-700">
                 {formatCurrency(income(entradaTransacoes))}
@@ -450,7 +504,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
             {/* Total de Saídas */}
             <div className="text-center p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg">
               <p className="text-sm text-rose-600 font-medium">
-                Total de Saídas ({periodLabels[saidaPeriod]})
+                Total de Saídas ({getPeriodLabel(saidaPeriod, dynamicMonthOptions)})
               </p>
               <p className="text-3xl font-bold text-rose-700">
                 {formatCurrency(expense(saidaTransacoes))}
@@ -606,7 +660,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
                 {formatCurrency(saldoAtual)}
               </p>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                {periodLabels[saldoPeriod]}
+                {getPeriodLabel(saldoPeriod, dynamicMonthOptions)}
               </p>
               {totalEntradas > 0 && (
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
