@@ -290,7 +290,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
       <div className="grid gap-4 md:grid-cols-3">
         {/* Card Entradas - Clicável */}
         <Card
-          className="min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] hover:border-emerald-300"
+          className="min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:scale-[1.02] hover:border-emerald-500 dark:hover:border-emerald-400"
           onClick={() => setEntradaOpen(true)}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -309,7 +309,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
         {/* Card Saídas - Clicável */}
         <Card
-          className="min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] hover:border-rose-300"
+          className="min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:scale-[1.02] hover:border-rose-500 dark:hover:border-rose-400"
           onClick={() => setSaidaOpen(true)}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -328,11 +328,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
         {/* Card Saldo Atual - Clicável */}
         <Card
-          className={`min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
-            balance(transacoes) >= 0
-              ? "hover:border-zinc-400 dark:hover:border-zinc-600"
-              : "hover:border-red-300"
-          }`}
+          className="min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:scale-[1.02] hover:border-zinc-500 dark:hover:border-zinc-400"
           onClick={() => setSaldoOpen(true)}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
