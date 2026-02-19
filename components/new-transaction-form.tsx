@@ -4,6 +4,7 @@ import * as React from "react";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { TRANSACTION_CATEGORIES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -22,31 +23,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const expenseCategories = [
-  "Alimentação",
-  "Assinaturas",
-  "Bares e Restaurantes",
-  "Casa",
-  "Educação",
-  "Investimento",
-  "Lazer",
-  "Mercado",
-  "Saúde",
-  "Transporte",
-  "Vestuário",
-  "Viagem",
-  "Beleza",
-  "Outros",
-  "Banco",
-];
-
-const incomeCategories = [
-  "Salário",
-  "Reembolso",
-  "Dividendos",
-  "Doação",
-  "Outros",
-];
 
 interface NewTransactionFormProps {
   onSave: (dados: any) => Promise<void>;
@@ -62,8 +38,9 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   // Seleciona categorias baseado no tipo de transação
-  const activeCategories =
-    type === "entrada" ? incomeCategories : expenseCategories;
+  // EDIT: Usando lista unificada por enquanto, ou filtrar se necessário
+  // const activeCategories = type === "entrada" ? incomeCategories : expenseCategories;
+  const activeCategories = TRANSACTION_CATEGORIES;
 
   // Limpa categoria ao trocar tipo
   React.useEffect(() => {
@@ -203,7 +180,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
                       </button>
                     </CommandEmpty>
                     <CommandGroup>
-                      {activeCategories.map((item) => (
+                      {TRANSACTION_CATEGORIES.map((item) => (
                         <CommandItem
                           key={item}
                           value={item}
