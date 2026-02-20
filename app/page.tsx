@@ -112,21 +112,21 @@ export default function Home() {
             <Skeleton className="h-9 w-20 bg-zinc-200 dark:bg-zinc-800" />
           </div>
           {/* Skeleton dos Cards de Resumo */}
-          <div className="grid gap-4 md:grid-cols-3">
-            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
-            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
-            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+          <div className="flex flex-col md:flex-row gap-4">
+            <Skeleton className="flex-1 h-[80px] rounded bg-zinc-200 dark:bg-zinc-800" />
+            <Skeleton className="flex-1 h-[80px] rounded bg-zinc-200 dark:bg-zinc-800" />
+            <Skeleton className="flex-1 h-[80px] rounded bg-zinc-200 dark:bg-zinc-800" />
           </div>
 
           {/* Skeleton do Formulário e da Tabela */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
+          <div className="flex flex-col md:flex-row gap-6">
             {/* Lado Esquerdo (Formulário) */}
-            <div className="md:col-span-4">
-              <Skeleton className="h-[400px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+            <div className="md:w-[320px] shrink-0">
+              <Skeleton className="h-[400px] w-full rounded bg-zinc-200 dark:bg-zinc-800" />
             </div>
             {/* Lado Direito (Lista) */}
-            <div className="md:col-span-8">
-              <Skeleton className="h-[400px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+            <div className="flex-1 min-w-0">
+              <Skeleton className="h-[400px] w-full rounded bg-zinc-200 dark:bg-zinc-800" />
             </div>
           </div>
         </div>
@@ -157,17 +157,29 @@ export default function Home() {
           <SummaryCards transacoes={transacoes} />
 
           {/* ÁREA PRINCIPAL: FORMULÁRIO E TABELA */}
-          <div className="grid gap-4 md:grid-cols-12">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-0">
             {/* COLUNA DA ESQUERDA: NOVA TRANSAÇÃO */}
-            <NewTransactionForm onSave={handleSalvar} />
+            <div className="md:w-[320px] shrink-0">
+              <NewTransactionForm onSave={handleSalvar} />
+            </div>
+
+            {/* Divider vertical (desktop) / horizontal (mobile) */}
+            <div className="hidden md:flex items-stretch px-6">
+              <div className="w-px bg-zinc-200 dark:bg-zinc-700" />
+            </div>
+            <div className="flex justify-center py-2 md:hidden">
+              <div className="h-px w-full bg-zinc-200 dark:bg-zinc-700" />
+            </div>
 
             {/* COLUNA DA DIREITA: HISTÓRICO */}
-            <TransactionList 
-              transacoes={transacoes} 
-              onDelete={handleExcluir} 
-              onUpdate={handleUpdate}
-              limit={7} 
-            />
+            <div className="flex-1 min-w-0">
+              <TransactionList 
+                transacoes={transacoes} 
+                onDelete={handleExcluir} 
+                onUpdate={handleUpdate}
+                limit={7} 
+              />
+            </div>
           </div>
         </div>
       </main>

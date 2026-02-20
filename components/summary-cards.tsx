@@ -7,7 +7,7 @@ import {
   TrendingDown,
   Calendar,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -287,55 +287,75 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-3">
-        {/* Card Entradas - Clicável */}
-        <Card
-          className="min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:scale-[1.02] hover:border-emerald-500 dark:hover:border-emerald-400"
+      {/* Summary items com dividers verticais */}
+      <div className="flex flex-col md:flex-row md:items-stretch gap-0">
+        {/* Entradas - Clicável */}
+        <div
+          className="group flex-1 min-w-0 flex flex-row items-stretch px-4 py-3 md:py-4 cursor-pointer transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md"
           onClick={() => setEntradaOpen(true)}
         >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Entradas</CardTitle>
-            <ArrowUpCircle className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
+          <div className="w-[3px] rounded-full bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity mr-3 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Entradas</span>
+              <ArrowUpCircle className="h-4 w-4 text-emerald-500" />
+            </div>
             <div className="text-2xl font-bold text-emerald-600">
               {formatCurrency(income(transacoes))}
             </div>
             <p className="text-xs text-muted-foreground">
               Clique para ver relatório
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Card Saídas - Clicável */}
-        <Card
-          className="min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:scale-[1.02] hover:border-rose-500 dark:hover:border-rose-400"
+        {/* Divider vertical (desktop) / horizontal (mobile) */}
+        <div className="hidden md:flex items-stretch px-4">
+          <div className="w-px bg-zinc-200 dark:bg-zinc-700" />
+        </div>
+        <div className="flex justify-center py-3 md:hidden">
+          <div className="h-px w-full mx-4 bg-zinc-200 dark:bg-zinc-700" />
+        </div>
+
+        {/* Saídas - Clicável */}
+        <div
+          className="group flex-1 min-w-0 flex flex-row items-stretch px-4 py-3 md:py-4 cursor-pointer transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md"
           onClick={() => setSaidaOpen(true)}
         >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Saídas</CardTitle>
-            <ArrowDownCircle className="h-4 w-4 text-rose-500" />
-          </CardHeader>
-          <CardContent>
+          <div className="w-[3px] rounded-full bg-rose-500 opacity-0 group-hover:opacity-100 transition-opacity mr-3 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Saídas</span>
+              <ArrowDownCircle className="h-4 w-4 text-rose-500" />
+            </div>
             <div className="text-2xl font-bold text-rose-600">
               {formatCurrency(expense(transacoes))}
             </div>
             <p className="text-xs text-muted-foreground">
               Clique para ver relatório
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Card Saldo Atual - Clicável */}
-        <Card
-          className="min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:scale-[1.02] hover:border-zinc-500 dark:hover:border-zinc-400"
+        {/* Divider vertical (desktop) / horizontal (mobile) */}
+        <div className="hidden md:flex items-stretch px-4">
+          <div className="w-px bg-zinc-200 dark:bg-zinc-700" />
+        </div>
+        <div className="flex justify-center py-3 md:hidden">
+          <div className="h-px w-full mx-4 bg-zinc-200 dark:bg-zinc-700" />
+        </div>
+
+        {/* Saldo Atual - Clicável */}
+        <div
+          className="group flex-1 min-w-0 flex flex-row items-stretch px-4 py-3 md:py-4 cursor-pointer transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md"
           onClick={() => setSaldoOpen(true)}
         >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Saldo Atual</CardTitle>
-            <DollarSign className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
-          </CardHeader>
-          <CardContent>
+          <div className="w-[3px] rounded-full bg-zinc-400 dark:bg-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mr-3 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Saldo Atual</span>
+              <DollarSign className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+            </div>
             <div
               className={`text-2xl font-bold ${
                 balance(transacoes) >= 0 ? "text-zinc-900 dark:text-zinc-100" : "text-red-600"
@@ -346,8 +366,13 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
             <p className="text-xs text-muted-foreground">
               Clique para ver balanço
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Divider horizontal abaixo dos cards */}
+      <div className="flex justify-center py-4">
+        <div className="h-px w-full bg-zinc-200 dark:bg-zinc-700" />
       </div>
 
       {/* Modal de Entradas */}

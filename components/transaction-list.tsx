@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -82,9 +81,9 @@ export function TransactionList({
   };
 
   return (
-    <Card className="md:col-span-8 min-w-0 flex flex-col h-full">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 space-x-2">
-        <CardTitle>Últimas Movimentações</CardTitle>
+    <div className="min-w-0 flex flex-col h-full">
+      <div className="flex flex-row items-center justify-between space-x-2 mb-4">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Últimas Movimentações</h2>
         <Button
           variant="ghost"
           size="icon"
@@ -95,8 +94,8 @@ export function TransactionList({
         >
           <Pencil className="h-4 w-4" />
         </Button>
-      </CardHeader>
-      <CardContent className="flex-1 flex flex-col">
+      </div>
+      <div className="flex-1 flex flex-col">
         <div className="overflow-x-auto flex-1">
           <TransactionTable
             transactions={displayedTransactions}
@@ -149,7 +148,7 @@ export function TransactionList({
             </Dialog>
           </div>
         )}
-      </CardContent>
+      </div>
 
       <EditTransactionDialog
         transaction={editingTransaction}
@@ -164,6 +163,6 @@ export function TransactionList({
         onOpenChange={(open) => !open && setDeleteId(null)}
         onConfirm={onConfirmDelete}
       />
-    </Card>
+    </div>
   );
 }
