@@ -112,21 +112,19 @@ export default function Home() {
             <Skeleton className="h-9 w-20 bg-zinc-200 dark:bg-zinc-800" />
           </div>
           {/* Skeleton dos Cards de Resumo */}
-          <div className="grid gap-4 md:grid-cols-3">
-            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
-            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
-            <Skeleton className="h-[120px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-0">
+            <Skeleton className="h-[70px] rounded bg-zinc-200 dark:bg-zinc-800" />
+            <Skeleton className="h-[70px] rounded bg-zinc-200 dark:bg-zinc-800" />
+            <Skeleton className="h-[70px] rounded bg-zinc-200 dark:bg-zinc-800" />
           </div>
 
           {/* Skeleton do Formulário e da Tabela */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
-            {/* Lado Esquerdo (Formulário) */}
-            <div className="md:col-span-4">
-              <Skeleton className="h-[400px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0">
+            <div>
+              <Skeleton className="h-[400px] w-full rounded bg-zinc-200 dark:bg-zinc-800" />
             </div>
-            {/* Lado Direito (Lista) */}
-            <div className="md:col-span-8">
-              <Skeleton className="h-[400px] w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+            <div className="md:col-span-2 md:pl-6">
+              <Skeleton className="h-[400px] w-full rounded bg-zinc-200 dark:bg-zinc-800" />
             </div>
           </div>
         </div>
@@ -157,17 +155,25 @@ export default function Home() {
           <SummaryCards transacoes={transacoes} />
 
           {/* ÁREA PRINCIPAL: FORMULÁRIO E TABELA */}
-          <div className="grid gap-4 md:grid-cols-12">
-            {/* COLUNA DA ESQUERDA: NOVA TRANSAÇÃO */}
-            <NewTransactionForm onSave={handleSalvar} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0">
+            {/* COLUNA DA ESQUERDA: NOVA TRANSAÇÃO - 1/3 */}
+            <div className="relative md:pr-8">
+              <NewTransactionForm onSave={handleSalvar} />
+              {/* Divider vertical (desktop) */}
+              <div className="hidden md:block absolute right-0 top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700" />
+              {/* Divider horizontal (mobile) */}
+              <div className="mx-4 h-px bg-zinc-200 dark:bg-zinc-700 md:hidden mt-6" />
+            </div>
 
-            {/* COLUNA DA DIREITA: HISTÓRICO */}
-            <TransactionList 
-              transacoes={transacoes} 
-              onDelete={handleExcluir} 
-              onUpdate={handleUpdate}
-              limit={7} 
-            />
+            {/* COLUNA DA DIREITA: HISTÓRICO - 2/3 */}
+            <div className="md:col-span-2 min-w-0 md:pl-6">
+              <TransactionList 
+                transacoes={transacoes} 
+                onDelete={handleExcluir} 
+                onUpdate={handleUpdate}
+                limit={7} 
+              />
+            </div>
           </div>
         </div>
       </main>

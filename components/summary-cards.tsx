@@ -7,7 +7,7 @@ import {
   TrendingDown,
   Calendar,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -285,69 +285,83 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
     </div>
   );
 
+  // Sub-componente reutilizável para cada item de resumo
+  const SummaryCardItem = ({
+    label,
+    value,
+    icon,
+    accentColor,
+    valueClassName,
+    onClick,
+    showDivider = false,
+  }: {
+    label: string;
+    value: string;
+    icon: React.ReactNode;
+    accentColor: string;
+    valueClassName?: string;
+    onClick: () => void;
+    showDivider?: boolean;
+  }) => (
+    <div className="relative">
+      <div
+        className="group flex flex-row items-stretch px-4 py-2 md:py-3 md:pr-8 cursor-pointer transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md"
+        onClick={onClick}
+      >
+        <div className={`w-[3px] rounded-full ${accentColor} opacity-0 group-hover:opacity-100 transition-opacity mr-3 shrink-0`} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{label}</span>
+            {icon}
+          </div>
+          <div className={`text-xl font-bold ${valueClassName ?? ""}`}>{value}</div>
+          <p className="text-xs text-muted-foreground">Clique para ver relatório</p>
+        </div>
+      </div>
+      {showDivider && (
+        <>
+          <div className="hidden md:block absolute right-0 top-2 bottom-2 w-px bg-zinc-200 dark:bg-zinc-700" />
+          <div className="mx-4 h-px bg-zinc-200 dark:bg-zinc-700 md:hidden" />
+        </>
+      )}
+    </div>
+  );
+
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-3">
-        {/* Card Entradas - Clicável */}
-        <Card
-          className="min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:scale-[1.02] hover:border-emerald-500 dark:hover:border-emerald-400"
+      {/* Cards de resumo */}
+      <div className="grid grid-cols-1 md:grid-cols-3">
+        <SummaryCardItem
+          label="Entradas"
+          value={formatCurrency(income(transacoes))}
+          icon={<ArrowUpCircle className="h-4 w-4 text-emerald-500" />}
+          accentColor="bg-emerald-500"
+          valueClassName="text-emerald-600"
           onClick={() => setEntradaOpen(true)}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Entradas</CardTitle>
-            <ArrowUpCircle className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">
-              {formatCurrency(income(transacoes))}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Clique para ver relatório
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Card Saídas - Clicável */}
-        <Card
-          className="min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:scale-[1.02] hover:border-rose-500 dark:hover:border-rose-400"
+          showDivider
+        />
+        <SummaryCardItem
+          label="Saídas"
+          value={formatCurrency(expense(transacoes))}
+          icon={<ArrowDownCircle className="h-4 w-4 text-rose-500" />}
+          accentColor="bg-rose-500"
+          valueClassName="text-rose-600"
           onClick={() => setSaidaOpen(true)}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Saídas</CardTitle>
-            <ArrowDownCircle className="h-4 w-4 text-rose-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-rose-600">
-              {formatCurrency(expense(transacoes))}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Clique para ver relatório
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Card Saldo Atual - Clicável */}
-        <Card
-          className="min-w-0 py-3 gap-2 md:py-6 md:gap-6 cursor-pointer transition-all hover:scale-[1.02] hover:border-zinc-500 dark:hover:border-zinc-400"
+          showDivider
+        />
+        <SummaryCardItem
+          label="Saldo Atual"
+          value={formatCurrency(balance(transacoes))}
+          icon={<DollarSign className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />}
+          accentColor="bg-zinc-400 dark:bg-zinc-500"
+          valueClassName={balance(transacoes) >= 0 ? "text-zinc-900 dark:text-zinc-100" : "text-red-600"}
           onClick={() => setSaldoOpen(true)}
-        >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Saldo Atual</CardTitle>
-            <DollarSign className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
-          </CardHeader>
-          <CardContent>
-            <div
-              className={`text-2xl font-bold ${
-                balance(transacoes) >= 0 ? "text-zinc-900 dark:text-zinc-100" : "text-red-600"
-              }`}
-            >
-              {formatCurrency(balance(transacoes))}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Clique para ver balanço
-            </p>
-          </CardContent>
-        </Card>
+        />
+      </div>
+
+      {/* Divider horizontal */}
+      <div className="py-2">
+        <div className="h-px w-full bg-zinc-200 dark:bg-zinc-700" />
       </div>
 
       {/* Modal de Entradas */}

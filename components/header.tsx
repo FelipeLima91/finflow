@@ -38,7 +38,7 @@ export function Header({ isGuest }: { isGuest?: boolean }) {
         </p>
       </div>
       
-      <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-4">
+      <div className="flex flex-row items-center gap-2 md:gap-4">
         {isGuest ? (
           <span className="text-sm text-zinc-500 dark:text-zinc-400">Olá, Visitante</span>
         ) : userEmail ? (

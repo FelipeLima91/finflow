@@ -6,7 +6,7 @@ import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TRANSACTION_CATEGORIES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import {
   Command,
   CommandEmpty,
@@ -105,12 +105,9 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
   // Se não der match em nada, o CommandEmpty aparece.
 
   return (
-    <Card className="md:col-span-4 h-fit min-w-0">
-      <CardHeader>
-        <CardTitle>Nova Transação</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="h-fit min-w-0">
+      <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Nova Transação</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="descricao">Descrição</Label>
             <Input
@@ -216,7 +213,6 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
             <Plus className="mr-2 h-4 w-4" /> Adicionar
           </Button>
         </form>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
