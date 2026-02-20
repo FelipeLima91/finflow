@@ -360,7 +360,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
       </div>
 
       {/* Divider horizontal */}
-      <div className="py-4">
+      <div className="py-2">
         <div className="h-px w-full bg-zinc-200 dark:bg-zinc-700" />
       </div>
 
