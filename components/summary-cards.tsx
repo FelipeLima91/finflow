@@ -285,93 +285,82 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
     </div>
   );
 
-  return (
-    <>
-      {/* Summary items com dividers verticais */}
-      <div className="flex flex-col md:flex-row md:items-stretch gap-0">
-        {/* Entradas - Clicável */}
-        <div
-          className="group flex-1 min-w-0 flex flex-row items-stretch px-4 py-3 md:py-4 cursor-pointer transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md"
-          onClick={() => setEntradaOpen(true)}
-        >
-          <div className="w-[3px] rounded-full bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity mr-3 shrink-0" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Entradas</span>
-              <ArrowUpCircle className="h-4 w-4 text-emerald-500" />
-            </div>
-            <div className="text-2xl font-bold text-emerald-600">
-              {formatCurrency(income(transacoes))}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Clique para ver relatório
-            </p>
+  // Sub-componente reutilizável para cada item de resumo
+  const SummaryCardItem = ({
+    label,
+    value,
+    icon,
+    accentColor,
+    valueClassName,
+    onClick,
+    showDivider = false,
+  }: {
+    label: string;
+    value: string;
+    icon: React.ReactNode;
+    accentColor: string;
+    valueClassName?: string;
+    onClick: () => void;
+    showDivider?: boolean;
+  }) => (
+    <div className="relative">
+      <div
+        className="group flex flex-row items-stretch px-4 py-2 md:py-3 md:pr-8 cursor-pointer transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md"
+        onClick={onClick}
+      >
+        <div className={`w-[3px] rounded-full ${accentColor} opacity-0 group-hover:opacity-100 transition-opacity mr-3 shrink-0`} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{label}</span>
+            {icon}
           </div>
-        </div>
-
-        {/* Divider vertical (desktop) / horizontal (mobile) */}
-        <div className="hidden md:flex items-stretch px-4">
-          <div className="w-px bg-zinc-200 dark:bg-zinc-700" />
-        </div>
-        <div className="flex justify-center py-3 md:hidden">
-          <div className="h-px w-full mx-4 bg-zinc-200 dark:bg-zinc-700" />
-        </div>
-
-        {/* Saídas - Clicável */}
-        <div
-          className="group flex-1 min-w-0 flex flex-row items-stretch px-4 py-3 md:py-4 cursor-pointer transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md"
-          onClick={() => setSaidaOpen(true)}
-        >
-          <div className="w-[3px] rounded-full bg-rose-500 opacity-0 group-hover:opacity-100 transition-opacity mr-3 shrink-0" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Saídas</span>
-              <ArrowDownCircle className="h-4 w-4 text-rose-500" />
-            </div>
-            <div className="text-2xl font-bold text-rose-600">
-              {formatCurrency(expense(transacoes))}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Clique para ver relatório
-            </p>
-          </div>
-        </div>
-
-        {/* Divider vertical (desktop) / horizontal (mobile) */}
-        <div className="hidden md:flex items-stretch px-4">
-          <div className="w-px bg-zinc-200 dark:bg-zinc-700" />
-        </div>
-        <div className="flex justify-center py-3 md:hidden">
-          <div className="h-px w-full mx-4 bg-zinc-200 dark:bg-zinc-700" />
-        </div>
-
-        {/* Saldo Atual - Clicável */}
-        <div
-          className="group flex-1 min-w-0 flex flex-row items-stretch px-4 py-3 md:py-4 cursor-pointer transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md"
-          onClick={() => setSaldoOpen(true)}
-        >
-          <div className="w-[3px] rounded-full bg-zinc-400 dark:bg-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mr-3 shrink-0" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Saldo Atual</span>
-              <DollarSign className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
-            </div>
-            <div
-              className={`text-2xl font-bold ${
-                balance(transacoes) >= 0 ? "text-zinc-900 dark:text-zinc-100" : "text-red-600"
-              }`}
-            >
-              {formatCurrency(balance(transacoes))}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Clique para ver balanço
-            </p>
-          </div>
+          <div className={`text-xl font-bold ${valueClassName ?? ""}`}>{value}</div>
+          <p className="text-xs text-muted-foreground">Clique para ver relatório</p>
         </div>
       </div>
+      {showDivider && (
+        <>
+          <div className="hidden md:block absolute right-0 top-2 bottom-2 w-px bg-zinc-200 dark:bg-zinc-700" />
+          <div className="mx-4 h-px bg-zinc-200 dark:bg-zinc-700 md:hidden" />
+        </>
+      )}
+    </div>
+  );
 
-      {/* Divider horizontal abaixo dos cards */}
-      <div className="flex justify-center py-4">
+  return (
+    <>
+      {/* Cards de resumo */}
+      <div className="grid grid-cols-1 md:grid-cols-3">
+        <SummaryCardItem
+          label="Entradas"
+          value={formatCurrency(income(transacoes))}
+          icon={<ArrowUpCircle className="h-4 w-4 text-emerald-500" />}
+          accentColor="bg-emerald-500"
+          valueClassName="text-emerald-600"
+          onClick={() => setEntradaOpen(true)}
+          showDivider
+        />
+        <SummaryCardItem
+          label="Saídas"
+          value={formatCurrency(expense(transacoes))}
+          icon={<ArrowDownCircle className="h-4 w-4 text-rose-500" />}
+          accentColor="bg-rose-500"
+          valueClassName="text-rose-600"
+          onClick={() => setSaidaOpen(true)}
+          showDivider
+        />
+        <SummaryCardItem
+          label="Saldo Atual"
+          value={formatCurrency(balance(transacoes))}
+          icon={<DollarSign className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />}
+          accentColor="bg-zinc-400 dark:bg-zinc-500"
+          valueClassName={balance(transacoes) >= 0 ? "text-zinc-900 dark:text-zinc-100" : "text-red-600"}
+          onClick={() => setSaldoOpen(true)}
+        />
+      </div>
+
+      {/* Divider horizontal */}
+      <div className="py-4">
         <div className="h-px w-full bg-zinc-200 dark:bg-zinc-700" />
       </div>
 

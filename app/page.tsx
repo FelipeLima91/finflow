@@ -112,20 +112,18 @@ export default function Home() {
             <Skeleton className="h-9 w-20 bg-zinc-200 dark:bg-zinc-800" />
           </div>
           {/* Skeleton dos Cards de Resumo */}
-          <div className="flex flex-col md:flex-row gap-4">
-            <Skeleton className="flex-1 h-[80px] rounded bg-zinc-200 dark:bg-zinc-800" />
-            <Skeleton className="flex-1 h-[80px] rounded bg-zinc-200 dark:bg-zinc-800" />
-            <Skeleton className="flex-1 h-[80px] rounded bg-zinc-200 dark:bg-zinc-800" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-0">
+            <Skeleton className="h-[70px] rounded bg-zinc-200 dark:bg-zinc-800" />
+            <Skeleton className="h-[70px] rounded bg-zinc-200 dark:bg-zinc-800" />
+            <Skeleton className="h-[70px] rounded bg-zinc-200 dark:bg-zinc-800" />
           </div>
 
           {/* Skeleton do Formulário e da Tabela */}
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Lado Esquerdo (Formulário) */}
-            <div className="md:w-[320px] shrink-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0">
+            <div>
               <Skeleton className="h-[400px] w-full rounded bg-zinc-200 dark:bg-zinc-800" />
             </div>
-            {/* Lado Direito (Lista) */}
-            <div className="flex-1 min-w-0">
+            <div className="md:col-span-2 md:pl-6">
               <Skeleton className="h-[400px] w-full rounded bg-zinc-200 dark:bg-zinc-800" />
             </div>
           </div>
@@ -157,22 +155,18 @@ export default function Home() {
           <SummaryCards transacoes={transacoes} />
 
           {/* ÁREA PRINCIPAL: FORMULÁRIO E TABELA */}
-          <div className="flex flex-col md:flex-row gap-6 md:gap-0">
-            {/* COLUNA DA ESQUERDA: NOVA TRANSAÇÃO */}
-            <div className="md:w-[320px] shrink-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0">
+            {/* COLUNA DA ESQUERDA: NOVA TRANSAÇÃO - 1/3 */}
+            <div className="relative md:pr-8">
               <NewTransactionForm onSave={handleSalvar} />
+              {/* Divider vertical (desktop) */}
+              <div className="hidden md:block absolute right-0 top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700" />
+              {/* Divider horizontal (mobile) */}
+              <div className="mx-4 h-px bg-zinc-200 dark:bg-zinc-700 md:hidden mt-6" />
             </div>
 
-            {/* Divider vertical (desktop) / horizontal (mobile) */}
-            <div className="hidden md:flex items-stretch px-6">
-              <div className="w-px bg-zinc-200 dark:bg-zinc-700" />
-            </div>
-            <div className="flex justify-center py-2 md:hidden">
-              <div className="h-px w-full bg-zinc-200 dark:bg-zinc-700" />
-            </div>
-
-            {/* COLUNA DA DIREITA: HISTÓRICO */}
-            <div className="flex-1 min-w-0">
+            {/* COLUNA DA DIREITA: HISTÓRICO - 2/3 */}
+            <div className="md:col-span-2 min-w-0 md:pl-6">
               <TransactionList 
                 transacoes={transacoes} 
                 onDelete={handleExcluir} 
