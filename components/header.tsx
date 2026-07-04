@@ -2,7 +2,7 @@
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import { LogOut, Sun, Moon } from "lucide-react";
+import { LogOut, Sun, Moon, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "./theme-provider";
 
@@ -29,20 +29,25 @@ export function Header({ isGuest }: { isGuest?: boolean }) {
 
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-          FinFlow
-        </h1>
-        <p className="text-zinc-500 dark:text-zinc-400">
-          Controle financeiro simples e eficiente.
-        </p>
+      <div className="flex items-center gap-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+          <Wallet className="h-5 w-5" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            FinFlow
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Controle financeiro simples e eficiente.
+          </p>
+        </div>
       </div>
-      
+
       <div className="flex flex-row items-center gap-2 md:gap-4">
         {isGuest ? (
-          <span className="text-sm text-zinc-500 dark:text-zinc-400">Olá, Visitante</span>
+          <span className="text-sm text-muted-foreground">Olá, Visitante</span>
         ) : userEmail ? (
-          <span className="text-sm text-zinc-500 dark:text-zinc-400">Olá, {userEmail}</span>
+          <span className="text-sm text-muted-foreground">Olá, {userEmail}</span>
         ) : null}
         <Button
           variant="outline"

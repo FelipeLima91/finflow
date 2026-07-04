@@ -1,0 +1,56 @@
+<!-- @dsCard group="Components" name="Cards & surfaces" subtitle="Card base, header/título e superfície com sombra suave" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FinFlow — Cards</title>
+<style>
+  :root {
+    --radius: 0.625rem;
+    --background: oklch(0.985 0.002 247.839);
+    --card: oklch(1 0 0);
+    --foreground: oklch(0.129 0.042 264.695);
+    --muted-foreground: oklch(0.554 0.046 257.417);
+    --border: oklch(0.929 0.013 255.508);
+    --shadow-sm: 0 1px 3px 0 oklch(0.13 0.04 264 / 0.06), 0 1px 2px -1px oklch(0.13 0.04 264 / 0.06);
+    --shadow-md: 0 4px 12px -2px oklch(0.13 0.04 264 / 0.08), 0 2px 6px -2px oklch(0.13 0.04 264 / 0.05);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 28px;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--background); color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1 { font-size: 20px; letter-spacing: -0.02em; margin: 0 0 20px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 4px); padding: 24px; box-shadow: var(--shadow-sm);
+  }
+  .card.elevated { box-shadow: var(--shadow-md); }
+  .title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  .desc { font-size: 13px; color: var(--muted-foreground); margin-top: 4px; }
+  .body { font-size: 14px; margin-top: 16px; line-height: 1.5; }
+  .tag { font-size: 11px; font-family: ui-monospace, monospace; color: var(--muted-foreground); margin-top: 16px; }
+</style>
+</head>
+<body>
+  <h1>Cards & surfaces</h1>
+  <div class="grid">
+    <div class="card">
+      <div class="title">Card padrão</div>
+      <div class="desc">Superfície branca, borda 1px e sombra-sm.</div>
+      <div class="body">Usado para agrupar conteúdo — formulários, listas e relatórios.</div>
+      <div class="tag">shadow-sm · radius-xl</div>
+    </div>
+    <div class="card elevated">
+      <div class="title">Card elevado</div>
+      <div class="desc">Mesmo card no estado hover.</div>
+      <div class="body">A sombra cresce de forma sutil para indicar interação.</div>
+      <div class="tag">shadow-md (hover)</div>
+    </div>
+  </div>
+</body>
+</html>

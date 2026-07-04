@@ -110,10 +110,10 @@ export function TransactionTable({
               </span>
             </TableCell>
             <TableCell
-              className={`text-right whitespace-nowrap ${
+              className={`text-right whitespace-nowrap font-medium tabular-nums ${
                 transaction.type === "income"
-                  ? "text-emerald-600"
-                  : "text-rose-600"
+                  ? "text-income"
+                  : "text-expense"
               }`}
             >
               {/* Desktop: com R$ */}
@@ -136,7 +136,7 @@ export function TransactionTable({
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  className="text-primary hover:text-primary hover:bg-accent"
                   onClick={() => onEdit(transaction)}
                 >
                   <Pencil className="h-4 w-4" />

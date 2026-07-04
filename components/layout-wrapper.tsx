@@ -12,7 +12,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
       <main className="flex-1 transition-all duration-300 ease-in-out md:pl-64">
         {children}

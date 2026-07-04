@@ -106,7 +106,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
 
   return (
     <div className="h-fit min-w-0">
-      <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Nova Transação</h2>
+      <h2 className="text-lg font-semibold text-foreground mb-4">Nova Transação</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="descricao">Descrição</Label>
@@ -133,7 +133,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
             <div className="space-y-2">
               <Label htmlFor="tipo">Tipo</Label>
               <select
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-9 w-full rounded-md border border-input bg-transparent dark:bg-input/30 px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
                 value={type}
                 onChange={(e) => setType(e.target.value as "entrada" | "saida")}
               >
@@ -166,7 +166,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
                   <CommandList>
                     <CommandEmpty>
                       <button
-                        className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+                        className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground cursor-pointer"
                         onClick={() => {
                           setCategory(inputValue);
                           setOpen(false);
@@ -207,8 +207,9 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
 
           <Button
             type="submit"
+            size="lg"
             disabled={isSubmitting || !description || !amount || !category}
-            className="w-full bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="w-full"
           >
             <Plus className="mr-2 h-4 w-4" /> Adicionar
           </Button>

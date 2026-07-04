@@ -6,8 +6,10 @@ import {
   TrendingUp,
   TrendingDown,
   Calendar,
+  ArrowRight,
 } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,21 +37,25 @@ interface SummaryCardsProps {
   transacoes: Transaction[];
 }
 
-// Cores gerais variadas para os gráficos de pizza
+// Paleta coesa puxando pro azul de marca (Linear/Mercury style)
 const CHART_COLORS = [
-  "#3b82f6", // Azul
-  "#22c55e", // Verde
-  "#f97316", // Laranja
-  "#8b5cf6", // Roxo
-  "#eab308", // Amarelo
-  "#ec4899", // Rosa
-  "#06b6d4", // Turquesa
-  "#ef4444", // Vermelho
-  "#14b8a6", // Teal
+  "#2563eb", // Azul (marca)
+  "#0891b2", // Ciano
+  "#7c3aed", // Violeta
+  "#10b981", // Esmeralda
   "#f59e0b", // Âmbar
-  "#6366f1", // Indigo
+  "#ec4899", // Rosa
+  "#14b8a6", // Teal
+  "#6366f1", // Índigo
+  "#ef4444", // Vermelho
   "#84cc16", // Lima
+  "#f97316", // Laranja
+  "#06b6d4", // Turquesa
 ];
+
+// Cores semânticas de finanças (espelham os tokens --income / --expense)
+const INCOME_COLOR = "#10b981";
+const EXPENSE_COLOR = "#ef4444";
 
 // Tipos de filtro de período
 type PeriodFilter = "all" | "30days" | "thisMonth" | string;
@@ -241,8 +247,8 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
   const totalSaidas = expense(saldoTransacoes);
   const saldoAtual = balance(saldoTransacoes);
   const dadosComparativo = [
-    { name: "Entradas", valor: totalEntradas, fill: "#10b981" },
-    { name: "Saídas", valor: totalSaidas, fill: "#f43f5e" },
+    { name: "Entradas", valor: totalEntradas, fill: INCOME_COLOR },
+    { name: "Saídas", valor: totalSaidas, fill: EXPENSE_COLOR },
   ];
 
   // Componente de filtro de período reutilizável
@@ -290,85 +296,73 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
     label,
     value,
     icon,
-    accentColor,
+    iconClassName,
     valueClassName,
     onClick,
-    showDivider = false,
   }: {
     label: string;
     value: string;
     icon: React.ReactNode;
-    accentColor: string;
+    iconClassName: string;
     valueClassName?: string;
     onClick: () => void;
-    showDivider?: boolean;
   }) => (
-    <div className="relative">
-      <div
-        className="group flex flex-row items-stretch px-4 py-2 md:py-3 md:pr-8 cursor-pointer transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md"
-        onClick={onClick}
-      >
-        <div className={`w-[3px] rounded-full ${accentColor} opacity-0 group-hover:opacity-100 transition-opacity mr-3 shrink-0`} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{label}</span>
-            {icon}
-          </div>
-          <div className={`text-xl font-bold ${valueClassName ?? ""}`}>{value}</div>
-          <p className="text-xs text-muted-foreground">Clique para ver relatório</p>
+    <button
+      type="button"
+      onClick={onClick}
+      className="group surface-card text-left p-4 md:p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-muted-foreground">{label}</span>
+        <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", iconClassName)}>
+          {icon}
         </div>
       </div>
-      {showDivider && (
-        <>
-          <div className="hidden md:block absolute right-0 top-2 bottom-2 w-px bg-zinc-200 dark:bg-zinc-700" />
-          <div className="mx-4 h-px bg-zinc-200 dark:bg-zinc-700 md:hidden" />
-        </>
-      )}
-    </div>
+      <div className={cn("mt-3 text-2xl font-bold tracking-tight tabular-nums", valueClassName)}>
+        {value}
+      </div>
+      <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+        Ver relatório
+        <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+      </p>
+    </button>
   );
 
   return (
     <>
       {/* Cards de resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <SummaryCardItem
           label="Entradas"
           value={formatCurrency(income(transacoes))}
-          icon={<ArrowUpCircle className="h-4 w-4 text-emerald-500" />}
-          accentColor="bg-emerald-500"
-          valueClassName="text-emerald-600"
+          icon={<ArrowUpCircle className="h-5 w-5 text-income" />}
+          iconClassName="bg-income-muted"
+          valueClassName="text-income"
           onClick={() => setEntradaOpen(true)}
-          showDivider
         />
         <SummaryCardItem
           label="Saídas"
           value={formatCurrency(expense(transacoes))}
-          icon={<ArrowDownCircle className="h-4 w-4 text-rose-500" />}
-          accentColor="bg-rose-500"
-          valueClassName="text-rose-600"
+          icon={<ArrowDownCircle className="h-5 w-5 text-expense" />}
+          iconClassName="bg-expense-muted"
+          valueClassName="text-expense"
           onClick={() => setSaidaOpen(true)}
-          showDivider
         />
         <SummaryCardItem
           label="Saldo Atual"
           value={formatCurrency(balance(transacoes))}
-          icon={<DollarSign className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />}
-          accentColor="bg-zinc-400 dark:bg-zinc-500"
-          valueClassName={balance(transacoes) >= 0 ? "text-zinc-900 dark:text-zinc-100" : "text-red-600"}
+          icon={<DollarSign className="h-5 w-5 text-primary" />}
+          iconClassName="bg-accent"
+          valueClassName={balance(transacoes) >= 0 ? "text-foreground" : "text-expense"}
           onClick={() => setSaldoOpen(true)}
         />
-      </div>
-
-      {/* Divider horizontal */}
-      <div className="py-2">
-        <div className="h-px w-full bg-zinc-200 dark:bg-zinc-700" />
       </div>
 
       {/* Modal de Entradas */}
       <Dialog open={entradaOpen} onOpenChange={setEntradaOpen}>
         <DialogContent className="w-[95vw] max-w-[700px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-emerald-600">
+            <DialogTitle className="flex items-center gap-2 text-income">
               <ArrowUpCircle className="h-5 w-5" />
               Relatório de Entradas
             </DialogTitle>
@@ -376,18 +370,18 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
           <div className="space-y-6">
             {/* Filtro de Período */}
-            <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 mb-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <Calendar className="h-4 w-4" />
               <span>Período:</span>
             </div>
             <PeriodFilterButtons value={entradaPeriod} onChange={setEntradaPeriod} />
 
             {/* Total de Entradas */}
-            <div className="text-center p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-              <p className="text-sm text-emerald-600 font-medium">
+            <div className="text-center p-4 bg-income-muted rounded-lg">
+              <p className="text-sm text-income font-medium">
                 Total de Entradas ({getPeriodLabel(entradaPeriod, dynamicMonthOptions)})
               </p>
-              <p className="text-3xl font-bold text-emerald-700">
+              <p className="text-3xl font-bold text-income">
                 {formatCurrency(income(entradaTransacoes))}
               </p>
             </div>
@@ -436,7 +430,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                <div className="h-[100px] flex items-center justify-center text-muted-foreground">
                   Sem dados de entradas neste período.
                 </div>
               )}
@@ -477,14 +471,14 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
                       />
                       <Bar
                         dataKey="total"
-                        fill="#10b981"
+                        fill={INCOME_COLOR}
                         radius={[4, 4, 0, 0]}
                       />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                <div className="h-[100px] flex items-center justify-center text-muted-foreground">
                   Sem dados de entradas neste período.
                 </div>
               )}
@@ -497,7 +491,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
       <Dialog open={saidaOpen} onOpenChange={setSaidaOpen}>
         <DialogContent className="w-[95vw] max-w-[700px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-rose-600">
+            <DialogTitle className="flex items-center gap-2 text-expense">
               <ArrowDownCircle className="h-5 w-5" />
               Relatório de Saídas
             </DialogTitle>
@@ -505,18 +499,18 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
           <div className="space-y-6">
             {/* Filtro de Período */}
-            <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 mb-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <Calendar className="h-4 w-4" />
               <span>Período:</span>
             </div>
             <PeriodFilterButtons value={saidaPeriod} onChange={setSaidaPeriod} />
 
             {/* Total de Saídas */}
-            <div className="text-center p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg">
-              <p className="text-sm text-rose-600 font-medium">
+            <div className="text-center p-4 bg-expense-muted rounded-lg">
+              <p className="text-sm text-expense font-medium">
                 Total de Saídas ({getPeriodLabel(saidaPeriod, dynamicMonthOptions)})
               </p>
-              <p className="text-3xl font-bold text-rose-700">
+              <p className="text-3xl font-bold text-expense">
                 {formatCurrency(expense(saidaTransacoes))}
               </p>
             </div>
@@ -565,7 +559,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                <div className="h-[100px] flex items-center justify-center text-muted-foreground">
                   Sem dados de despesas neste período.
                 </div>
               )}
@@ -606,14 +600,14 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
                       />
                       <Bar
                         dataKey="total"
-                        fill="#f43f5e"
+                        fill={EXPENSE_COLOR}
                         radius={[4, 4, 0, 0]}
                       />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                <div className="h-[100px] flex items-center justify-center text-muted-foreground">
                   Sem dados de despesas neste período.
                 </div>
               )}
@@ -634,7 +628,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
           <div className="space-y-6">
             {/* Filtro de Período */}
-            <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 mb-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <Calendar className="h-4 w-4" />
               <span>Período:</span>
             </div>
@@ -642,21 +636,21 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
             {/* Indicador Grande do Saldo */}
             <div
-              className={`text-center p-6 rounded-xl ${
+              className={`text-center p-6 rounded-xl border ${
                 saldoAtual >= 0
-                  ? "bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-900/30"
-                  : "bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-900/30"
+                  ? "bg-income-muted border-income/20"
+                  : "bg-expense-muted border-expense/20"
               }`}
             >
               <div className="flex items-center justify-center gap-2 mb-2">
                 {saldoAtual >= 0 ? (
-                  <TrendingUp className="h-8 w-8 text-emerald-600" />
+                  <TrendingUp className="h-8 w-8 text-income" />
                 ) : (
-                  <TrendingDown className="h-8 w-8 text-red-600" />
+                  <TrendingDown className="h-8 w-8 text-expense" />
                 )}
                 <span
                   className={`text-sm font-medium ${
-                    saldoAtual >= 0 ? "text-emerald-600" : "text-red-600"
+                    saldoAtual >= 0 ? "text-income" : "text-expense"
                   }`}
                 >
                   {saldoAtual >= 0 ? "Saldo Positivo" : "Saldo Negativo"}
@@ -664,16 +658,16 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
               </div>
               <p
                 className={`text-3xl sm:text-4xl font-bold ${
-                  saldoAtual >= 0 ? "text-emerald-700" : "text-red-700"
+                  saldoAtual >= 0 ? "text-income" : "text-expense"
                 }`}
               >
                 {formatCurrency(saldoAtual)}
               </p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {getPeriodLabel(saldoPeriod, dynamicMonthOptions)}
               </p>
               {totalEntradas > 0 && (
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
+                <p className="text-sm text-muted-foreground mt-2">
                   {saldoAtual >= 0
                     ? `Você está economizando ${((saldoAtual / totalEntradas) * 100).toFixed(1)}% das suas entradas`
                     : `Seus gastos excedem suas entradas em ${formatCurrency(Math.abs(saldoAtual))}`}
@@ -683,17 +677,17 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
 
             {/* Resumo Rápido */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-center">
-                <ArrowUpCircle className="h-5 w-5 text-emerald-600 mx-auto mb-1" />
-                <p className="text-xs text-emerald-600 font-medium">Entradas</p>
-                <p className="text-lg font-bold text-emerald-700">
+              <div className="p-4 bg-income-muted rounded-lg text-center">
+                <ArrowUpCircle className="h-5 w-5 text-income mx-auto mb-1" />
+                <p className="text-xs text-income font-medium">Entradas</p>
+                <p className="text-lg font-bold text-income">
                   {formatCurrency(totalEntradas)}
                 </p>
               </div>
-              <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg text-center">
-                <ArrowDownCircle className="h-5 w-5 text-rose-600 mx-auto mb-1" />
-                <p className="text-xs text-rose-600 font-medium">Saídas</p>
-                <p className="text-lg font-bold text-rose-700">
+              <div className="p-4 bg-expense-muted rounded-lg text-center">
+                <ArrowDownCircle className="h-5 w-5 text-expense mx-auto mb-1" />
+                <p className="text-xs text-expense font-medium">Saídas</p>
+                <p className="text-lg font-bold text-expense">
                   {formatCurrency(totalSaidas)}
                 </p>
               </div>
@@ -736,7 +730,7 @@ export function SummaryCards({ transacoes }: SummaryCardsProps) {
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                <div className="h-[100px] flex items-center justify-center text-muted-foreground">
                   Sem transações neste período.
                 </div>
               )}

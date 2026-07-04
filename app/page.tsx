@@ -102,29 +102,32 @@ export default function Home() {
 
   if (isLoadingUser) {
     return (
-      <main className="min-h-screen w-full bg-zinc-50 dark:bg-zinc-950 p-4 md:p-8 overflow-x-hidden">
+      <main className="min-h-screen w-full bg-background p-4 md:p-8 overflow-x-hidden">
         <div className="mx-auto max-w-6xl space-y-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Skeleton className="h-8 w-8 rounded bg-zinc-200 dark:bg-zinc-800" />
-              <Skeleton className="h-6 w-32 bg-zinc-200 dark:bg-zinc-800" />
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-11 w-11 rounded-xl" />
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-3 w-48" />
+              </div>
             </div>
-            <Skeleton className="h-9 w-20 bg-zinc-200 dark:bg-zinc-800" />
+            <Skeleton className="h-9 w-20" />
           </div>
           {/* Skeleton dos Cards de Resumo */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-0">
-            <Skeleton className="h-[70px] rounded bg-zinc-200 dark:bg-zinc-800" />
-            <Skeleton className="h-[70px] rounded bg-zinc-200 dark:bg-zinc-800" />
-            <Skeleton className="h-[70px] rounded bg-zinc-200 dark:bg-zinc-800" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Skeleton className="h-[88px] rounded-xl" />
+            <Skeleton className="h-[88px] rounded-xl" />
+            <Skeleton className="h-[88px] rounded-xl" />
           </div>
 
           {/* Skeleton do Formulário e da Tabela */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <Skeleton className="h-[400px] w-full rounded bg-zinc-200 dark:bg-zinc-800" />
+              <Skeleton className="h-[400px] w-full rounded-xl" />
             </div>
-            <div className="md:col-span-2 md:pl-6">
-              <Skeleton className="h-[400px] w-full rounded bg-zinc-200 dark:bg-zinc-800" />
+            <div className="md:col-span-2">
+              <Skeleton className="h-[400px] w-full rounded-xl" />
             </div>
           </div>
         </div>
@@ -133,18 +136,18 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
-      <main className="flex-1 p-2 sm:p-4 md:p-8">
+    <div className="min-h-screen flex flex-col bg-background">
+      <main className="flex-1 p-3 sm:p-4 md:p-8">
         <div className="mx-auto max-w-6xl space-y-8">
           {/* CABEÇALHO */}
           <div className="flex flex-col gap-4">
             <Header isGuest={isGuest} />
             {isGuest && (
-                <div className="bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-200 px-4 py-2 rounded-md flex justify-between items-center text-sm">
+                <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 px-4 py-2.5 rounded-xl flex flex-col sm:flex-row gap-2 justify-between items-start sm:items-center text-sm">
                     <span>
-                        <strong>Modo Visitante:</strong> Seus dados são salvos apenas neste navegador e expiram em 24h.
+                        <strong className="font-semibold">Modo Visitante:</strong> Seus dados são salvos apenas neste navegador e expiram em 24h.
                     </span>
-                    <Button variant="outline" size="sm" onClick={handleLogout} className="border-amber-300 dark:border-amber-600 hover:bg-amber-200 dark:hover:bg-amber-800/40 text-amber-900 dark:text-amber-100 h-8">
+                    <Button variant="outline" size="sm" onClick={handleLogout} className="shrink-0 border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-amber-900 dark:text-amber-100 h-8">
                         <LogOut className="mr-2 h-3 w-3" /> Sair
                     </Button>
                 </div>
@@ -155,23 +158,19 @@ export default function Home() {
           <SummaryCards transacoes={transacoes} />
 
           {/* ÁREA PRINCIPAL: FORMULÁRIO E TABELA */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             {/* COLUNA DA ESQUERDA: NOVA TRANSAÇÃO - 1/3 */}
-            <div className="relative md:pr-8">
+            <div className="surface-card p-5 md:p-6">
               <NewTransactionForm onSave={handleSalvar} />
-              {/* Divider vertical (desktop) */}
-              <div className="hidden md:block absolute right-0 top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700" />
-              {/* Divider horizontal (mobile) */}
-              <div className="mx-4 h-px bg-zinc-200 dark:bg-zinc-700 md:hidden mt-6" />
             </div>
 
             {/* COLUNA DA DIREITA: HISTÓRICO - 2/3 */}
-            <div className="md:col-span-2 min-w-0 md:pl-6">
-              <TransactionList 
-                transacoes={transacoes} 
-                onDelete={handleExcluir} 
+            <div className="md:col-span-2 min-w-0 surface-card p-5 md:p-6">
+              <TransactionList
+                transacoes={transacoes}
+                onDelete={handleExcluir}
                 onUpdate={handleUpdate}
-                limit={7} 
+                limit={7}
               />
             </div>
           </div>

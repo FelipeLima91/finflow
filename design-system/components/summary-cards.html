@@ -1,0 +1,73 @@
+<!-- @dsCard group="Patterns" name="Summary cards" subtitle="Cards de resumo: entradas, saídas e saldo" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FinFlow — Summary cards</title>
+<style>
+  :root {
+    --radius: 0.625rem;
+    --background: oklch(0.985 0.002 247.839);
+    --card: oklch(1 0 0);
+    --foreground: oklch(0.129 0.042 264.695);
+    --muted-foreground: oklch(0.554 0.046 257.417);
+    --border: oklch(0.929 0.013 255.508);
+    --primary: oklch(0.546 0.215 262.881);
+    --accent: oklch(0.962 0.018 262.5);
+    --income: oklch(0.596 0.145 163.225);
+    --income-muted: oklch(0.95 0.05 163.225);
+    --expense: oklch(0.637 0.237 25.331);
+    --expense-muted: oklch(0.955 0.03 17.585);
+    --shadow-sm: 0 1px 3px 0 oklch(0.13 0.04 264 / 0.06), 0 1px 2px -1px oklch(0.13 0.04 264 / 0.06);
+    --shadow-md: 0 4px 12px -2px oklch(0.13 0.04 264 / 0.08), 0 2px 6px -2px oklch(0.13 0.04 264 / 0.05);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 28px;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--background); color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1 { font-size: 20px; letter-spacing: -0.02em; margin: 0 0 20px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+  .scard {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 4px); padding: 20px; box-shadow: var(--shadow-sm);
+    transition: transform .2s, box-shadow .2s; cursor: pointer;
+  }
+  .scard:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .top { display: flex; align-items: center; justify-content: space-between; }
+  .label { font-size: 13px; font-weight: 500; color: var(--muted-foreground); }
+  .ico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .ico.in { background: var(--income-muted); color: var(--income); }
+  .ico.out { background: var(--expense-muted); color: var(--expense); }
+  .ico.bal { background: var(--accent); color: var(--primary); }
+  .value { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-top: 12px; font-variant-numeric: tabular-nums; }
+  .value.in { color: var(--income); }
+  .value.out { color: var(--expense); }
+  .hint { font-size: 12px; color: var(--muted-foreground); margin-top: 4px; }
+</style>
+</head>
+<body>
+  <h1>Summary cards</h1>
+  <div class="grid">
+    <div class="scard">
+      <div class="top"><span class="label">Entradas</span><span class="ico in">↑</span></div>
+      <div class="value in">R$ 3.500,00</div>
+      <div class="hint">Ver relatório →</div>
+    </div>
+    <div class="scard">
+      <div class="top"><span class="label">Saídas</span><span class="ico out">↓</span></div>
+      <div class="value out">R$ 1.280,40</div>
+      <div class="hint">Ver relatório →</div>
+    </div>
+    <div class="scard">
+      <div class="top"><span class="label">Saldo Atual</span><span class="ico bal">$</span></div>
+      <div class="value">R$ 2.219,60</div>
+      <div class="hint">Ver relatório →</div>
+    </div>
+  </div>
+</body>
+</html>

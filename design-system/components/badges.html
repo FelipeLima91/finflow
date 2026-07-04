@@ -1,0 +1,60 @@
+<!-- @dsCard group="Components" name="Finance badges & pills" subtitle="Entrada / saída / saldo com tokens semânticos" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FinFlow — Badges</title>
+<style>
+  :root {
+    --radius: 0.625rem;
+    --background: oklch(0.985 0.002 247.839);
+    --foreground: oklch(0.129 0.042 264.695);
+    --muted-foreground: oklch(0.554 0.046 257.417);
+    --income: oklch(0.596 0.145 163.225);
+    --income-muted: oklch(0.95 0.05 163.225);
+    --expense: oklch(0.637 0.237 25.331);
+    --expense-muted: oklch(0.955 0.03 17.585);
+    --accent: oklch(0.962 0.018 262.5);
+    --primary: oklch(0.546 0.215 262.881);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 28px;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--background); color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1 { font-size: 20px; letter-spacing: -0.02em; margin: 0 0 4px; }
+  .sub { color: var(--muted-foreground); font-size: 13px; margin: 0 0 24px; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-foreground); margin: 22px 0 12px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+  .income { background: var(--income-muted); color: var(--income); }
+  .expense { background: var(--expense-muted); color: var(--expense); }
+  .neutral { background: var(--accent); color: var(--primary); }
+  .amount { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .pos { color: var(--income); }
+  .neg { color: var(--expense); }
+  .dot { width: 8px; height: 8px; border-radius: 999px; }
+</style>
+</head>
+<body>
+  <h1>Finance badges & pills</h1>
+  <p class="sub">Cores semânticas: <code>income</code> (entrada), <code>expense</code> (saída).</p>
+
+  <h2>Pills</h2>
+  <div class="row">
+    <span class="pill income"><span class="dot" style="background:var(--income)"></span> Entrada</span>
+    <span class="pill expense"><span class="dot" style="background:var(--expense)"></span> Saída</span>
+    <span class="pill neutral"><span class="dot" style="background:var(--primary)"></span> Saldo</span>
+  </div>
+
+  <h2>Valores</h2>
+  <div class="row">
+    <span class="amount pos">+ R$ 3.500,00</span>
+    <span class="amount neg">− R$ 1.280,40</span>
+    <span class="amount">R$ 2.219,60</span>
+  </div>
+</body>
+</html>

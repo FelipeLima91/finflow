@@ -9,8 +9,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
-// Cores para o gráfico de Pizza (pode mudar se quiser)
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d']
+// Paleta coesa puxando pro azul de marca (alinhada ao design system)
+const COLORS = ['#2563eb', '#0891b2', '#7c3aed', '#10b981', '#f59e0b', '#ec4899']
 
 export default function DashboardPage() {
   const [transacoes, setTransacoes] = useState<Transaction[]>([])
@@ -58,15 +58,15 @@ export default function DashboardPage() {
     .reverse() 
 
   return (
-    <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950 p-4 md:p-8">
+    <main className="min-h-screen bg-background p-4 md:p-8">
       <div className="mx-auto max-w-6xl space-y-8">
-        
+
         {/* Cabeçalho com botão de voltar */}
-        <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-full transition">
-            <ArrowLeft className="h-6 w-6 text-zinc-900 dark:text-zinc-100" />
+        <div className="flex items-center gap-3">
+          <Link href="/" className="p-2 hover:bg-accent text-foreground rounded-lg transition-colors">
+            <ArrowLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Relatórios & Gráficos</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Relatórios & Gráficos</h1>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2">
@@ -97,7 +97,7 @@ export default function DashboardPage() {
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                <div className="h-full flex items-center justify-center text-muted-foreground">
                   Sem dados de despesas ainda.
                 </div>
               )}
@@ -116,11 +116,11 @@ export default function DashboardPage() {
                     <XAxis dataKey="name" fontSize={12} />
                     <YAxis fontSize={12} tickFormatter={(value) => `R$${value}`}/>
                     <Tooltip formatter={(value) => [`R$ ${value}`, 'Gasto']} />
-                    <Bar dataKey="total" fill="#18181b" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="total" fill="#2563eb" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                <div className="h-full flex items-center justify-center text-muted-foreground">
                   Sem dados de despesas ainda.
                 </div>
               )}

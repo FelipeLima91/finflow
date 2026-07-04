@@ -13,7 +13,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { LogIn, User } from "lucide-react";
+import { LogIn, User, Wallet } from "lucide-react";
 import { Footer } from "@/components/footer";
 
 export default function LoginPage() {
@@ -49,9 +49,18 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
+    <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+        <div className="w-full max-w-md space-y-6">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
+              <Wallet className="h-7 w-7" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Controle financeiro simples e eficiente.
+            </p>
+          </div>
+          <Card className="w-full">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">
               Acessar FinFlow
@@ -86,14 +95,15 @@ export default function LoginPage() {
               </div>
 
               {error && (
-                <div className="text-sm text-red-500 dark:text-red-400 text-center font-medium bg-red-50 dark:bg-red-900/30 p-2 rounded">
+                <div className="text-sm text-expense text-center font-medium bg-expense-muted border border-expense/20 p-2.5 rounded-lg">
                   {error}
                 </div>
               )}
 
               <Button
                 type="submit"
-                className="w-full bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                size="lg"
+                className="w-full"
                 disabled={loading}
               >
                 <LogIn className="mr-2 h-4 w-4" />
@@ -123,6 +133,7 @@ export default function LoginPage() {
             </form>
           </CardContent>
         </Card>
+        </div>
       </main>
       <Footer />
     </div>

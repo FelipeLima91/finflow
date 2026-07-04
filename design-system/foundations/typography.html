@@ -1,0 +1,46 @@
+<!-- @dsCard group="Foundations" name="Typography" subtitle="Escala tipográfica e pesos" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FinFlow — Typography</title>
+<style>
+  :root {
+    --foreground: oklch(0.129 0.042 264.695);
+    --muted-foreground: oklch(0.554 0.046 257.417);
+    --border: oklch(0.929 0.013 255.508);
+    --background: oklch(0.985 0.002 247.839);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 28px;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--background); color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1 { font-size: 20px; letter-spacing: -0.02em; margin: 0 0 24px; }
+  .row { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .label { width: 130px; flex-shrink: 0; font-size: 11px; font-family: ui-monospace, monospace; color: var(--muted-foreground); }
+  .display { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; }
+  .h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+  .h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+  .h3 { font-size: 16px; font-weight: 600; }
+  .body { font-size: 14px; }
+  .small { font-size: 13px; }
+  .muted { font-size: 13px; color: var(--muted-foreground); }
+  .nums { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+  <h1>Typography</h1>
+  <div class="row"><span class="label">display / 36 / 700</span><span class="display">FinFlow</span></div>
+  <div class="row"><span class="label">h1 / 28 / 700</span><span class="h1">Controle financeiro</span></div>
+  <div class="row"><span class="label">h2 / 20 / 600</span><span class="h2">Últimas movimentações</span></div>
+  <div class="row"><span class="label">h3 / 16 / 600</span><span class="h3">Nova transação</span></div>
+  <div class="row"><span class="label">body / 14 / 400</span><span class="body">Texto padrão da interface, claro e legível.</span></div>
+  <div class="row"><span class="label">small / 13 / 400</span><span class="small">Rótulos e descrições secundárias.</span></div>
+  <div class="row"><span class="label">muted / 13</span><span class="muted">Texto auxiliar de baixo contraste.</span></div>
+  <div class="row"><span class="label">tabular-nums / 22</span><span class="nums">R$ 12.480,00</span></div>
+</body>
+</html>

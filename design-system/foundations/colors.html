@@ -1,0 +1,78 @@
+<!-- @dsCard group="Foundations" name="Color tokens" subtitle="Marca, neutros, finanças e gráficos — light & dark" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FinFlow — Color tokens</title>
+<style>
+  :root {
+    --radius: 0.625rem;
+    --background: oklch(0.985 0.002 247.839);
+    --foreground: oklch(0.129 0.042 264.695);
+    --card: oklch(1 0 0);
+    --primary: oklch(0.546 0.215 262.881);
+    --muted: oklch(0.968 0.007 247.896);
+    --muted-foreground: oklch(0.554 0.046 257.417);
+    --border: oklch(0.929 0.013 255.508);
+    --income: oklch(0.596 0.145 163.225);
+    --expense: oklch(0.637 0.237 25.331);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    padding: 28px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1 { font-size: 20px; letter-spacing: -0.02em; margin: 0 0 4px; }
+  .sub { color: var(--muted-foreground); font-size: 13px; margin: 0 0 24px; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-foreground); margin: 24px 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .swatch { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--card); }
+  .chip { height: 64px; }
+  .meta { padding: 8px 10px; }
+  .name { font-size: 13px; font-weight: 600; }
+  .val { font-size: 11px; color: var(--muted-foreground); font-family: ui-monospace, monospace; margin-top: 2px; word-break: break-all; }
+</style>
+</head>
+<body>
+  <h1>Color tokens</h1>
+  <p class="sub">Paleta slate + azul confiança. Valores em OKLCH, expostos como CSS variables no app (light mode).</p>
+
+  <h2>Marca</h2>
+  <div class="grid">
+    <div class="swatch"><div class="chip" style="background:oklch(0.546 0.215 262.881)"></div><div class="meta"><div class="name">primary</div><div class="val">oklch(0.546 0.215 262.881)</div></div></div>
+    <div class="swatch"><div class="chip" style="background:oklch(0.962 0.018 262.5)"></div><div class="meta"><div class="name">accent</div><div class="val">oklch(0.962 0.018 262.5)</div></div></div>
+    <div class="swatch"><div class="chip" style="background:oklch(0.546 0.215 262.881)"></div><div class="meta"><div class="name">ring</div><div class="val">oklch(0.546 0.215 262.881)</div></div></div>
+  </div>
+
+  <h2>Neutros (slate)</h2>
+  <div class="grid">
+    <div class="swatch"><div class="chip" style="background:oklch(0.985 0.002 247.839); border-bottom:1px solid oklch(0.929 0.013 255.508)"></div><div class="meta"><div class="name">background</div><div class="val">oklch(0.985 0.002 247.839)</div></div></div>
+    <div class="swatch"><div class="chip" style="background:oklch(1 0 0); border-bottom:1px solid oklch(0.929 0.013 255.508)"></div><div class="meta"><div class="name">card</div><div class="val">oklch(1 0 0)</div></div></div>
+    <div class="swatch"><div class="chip" style="background:oklch(0.129 0.042 264.695)"></div><div class="meta"><div class="name">foreground</div><div class="val">oklch(0.129 0.042 264.695)</div></div></div>
+    <div class="swatch"><div class="chip" style="background:oklch(0.968 0.007 247.896)"></div><div class="meta"><div class="name">muted</div><div class="val">oklch(0.968 0.007 247.896)</div></div></div>
+    <div class="swatch"><div class="chip" style="background:oklch(0.554 0.046 257.417)"></div><div class="meta"><div class="name">muted-foreground</div><div class="val">oklch(0.554 0.046 257.417)</div></div></div>
+    <div class="swatch"><div class="chip" style="background:oklch(0.929 0.013 255.508)"></div><div class="meta"><div class="name">border</div><div class="val">oklch(0.929 0.013 255.508)</div></div></div>
+  </div>
+
+  <h2>Finanças (semânticos)</h2>
+  <div class="grid">
+    <div class="swatch"><div class="chip" style="background:oklch(0.596 0.145 163.225)"></div><div class="meta"><div class="name">income</div><div class="val">entrada · oklch(0.596 0.145 163.225)</div></div></div>
+    <div class="swatch"><div class="chip" style="background:oklch(0.637 0.237 25.331)"></div><div class="meta"><div class="name">expense</div><div class="val">saída · oklch(0.637 0.237 25.331)</div></div></div>
+    <div class="swatch"><div class="chip" style="background:oklch(0.577 0.245 27.325)"></div><div class="meta"><div class="name">destructive</div><div class="val">oklch(0.577 0.245 27.325)</div></div></div>
+  </div>
+
+  <h2>Gráficos</h2>
+  <div class="grid">
+    <div class="swatch"><div class="chip" style="background:#2563eb"></div><div class="meta"><div class="name">chart-1</div><div class="val">#2563eb</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#0891b2"></div><div class="meta"><div class="name">chart-2</div><div class="val">#0891b2</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#7c3aed"></div><div class="meta"><div class="name">chart-3</div><div class="val">#7c3aed</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#10b981"></div><div class="meta"><div class="name">chart-4</div><div class="val">#10b981</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#f59e0b"></div><div class="meta"><div class="name">chart-5</div><div class="val">#f59e0b</div></div></div>
+  </div>
+</body>
+</html>

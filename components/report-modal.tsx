@@ -74,9 +74,9 @@ export function ReportModal({
   const totalValue = isIncome ? income(filteredTransacoes) : expense(filteredTransacoes);
   const title = isIncome ? "Relatório de Entradas" : "Relatório de Saídas";
   const Icon = isIncome ? ArrowUpCircle : ArrowDownCircle;
-  const colorClass = isIncome ? "text-emerald-600" : "text-rose-600";
-  const bgColorClass = isIncome ? "bg-emerald-50 dark:bg-emerald-900/20" : "bg-rose-50 dark:bg-rose-900/20";
-  const totalColorClass = isIncome ? "text-emerald-700" : "text-rose-700";
+  const colorClass = isIncome ? "text-income" : "text-expense";
+  const bgColorClass = isIncome ? "bg-income-muted" : "bg-expense-muted";
+  const totalColorClass = isIncome ? "text-income" : "text-expense";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -89,7 +89,7 @@ export function ReportModal({
         </DialogHeader>
 
         <div className="space-y-6">
-          <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 mb-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
             <Calendar className="h-4 w-4" />
             <span>Período:</span>
           </div>
@@ -150,7 +150,7 @@ export function ReportModal({
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+              <div className="h-[100px] flex items-center justify-center text-muted-foreground">
                 Sem dados de {isIncome ? "entradas" : "despesas"} neste período.
               </div>
             )}
@@ -194,7 +194,7 @@ export function ReportModal({
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+              <div className="h-[100px] flex items-center justify-center text-muted-foreground">
                 Sem dados de {isIncome ? "entradas" : "despesas"} neste período.
               </div>
             )}

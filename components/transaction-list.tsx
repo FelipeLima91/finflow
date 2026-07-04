@@ -83,7 +83,7 @@ export function TransactionList({
   return (
     <div className="min-w-0 flex flex-col h-full">
       <div className="flex flex-row items-center justify-between space-x-2 mb-4">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Últimas Movimentações</h2>
+        <h2 className="text-lg font-semibold text-foreground">Últimas Movimentações</h2>
         <Button
           variant="ghost"
           size="icon"

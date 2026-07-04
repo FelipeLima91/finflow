@@ -79,7 +79,7 @@ export function BalanceModal({
         </DialogHeader>
 
         <div className="space-y-6">
-          <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 mb-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
             <Calendar className="h-4 w-4" />
             <span>Período:</span>
           </div>
@@ -99,22 +99,22 @@ export function BalanceModal({
           >
             <div className="flex items-center justify-center gap-2 mb-2">
               {isPositive ? (
-                <TrendingUp className="h-8 w-8 text-emerald-600" />
+                <TrendingUp className="h-8 w-8 text-income" />
               ) : (
-                <TrendingDown className="h-8 w-8 text-red-600" />
+                <TrendingDown className="h-8 w-8 text-expense" />
               )}
-              <span className={cn("text-sm font-medium", isPositive ? "text-emerald-600" : "text-red-600")}>
+              <span className={cn("text-sm font-medium", isPositive ? "text-income" : "text-expense")}>
                 {isPositive ? "Saldo Positivo" : "Saldo Negativo"}
               </span>
             </div>
-            <p className={cn("text-3xl sm:text-4xl font-bold", isPositive ? "text-emerald-700" : "text-red-700")}>
+            <p className={cn("text-3xl sm:text-4xl font-bold", isPositive ? "text-income" : "text-expense")}>
               {formatCurrency(saldoAtual)}
             </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {getPeriodLabel(period, monthOptions)}
             </p>
             {totalEntradas > 0 && (
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 {isPositive
                   ? `Você está economizando ${((saldoAtual / totalEntradas) * 100).toFixed(1)}% das suas entradas`
                   : `Seus gastos excedem suas entradas em ${formatCurrency(Math.abs(saldoAtual))}`}
@@ -123,17 +123,17 @@ export function BalanceModal({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-center">
-              <ArrowUpCircle className="h-5 w-5 text-emerald-600 mx-auto mb-1" />
-              <p className="text-xs text-emerald-600 font-medium">Entradas</p>
-              <p className="text-lg font-bold text-emerald-700">
+            <div className="p-4 bg-income-muted rounded-lg text-center">
+              <ArrowUpCircle className="h-5 w-5 text-income mx-auto mb-1" />
+              <p className="text-xs text-income font-medium">Entradas</p>
+              <p className="text-lg font-bold text-income">
                 {formatCurrency(totalEntradas)}
               </p>
             </div>
-            <div className="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-lg text-center">
-              <ArrowDownCircle className="h-5 w-5 text-rose-600 mx-auto mb-1" />
-              <p className="text-xs text-rose-600 font-medium">Saídas</p>
-              <p className="text-lg font-bold text-rose-700">
+            <div className="p-4 bg-expense-muted rounded-lg text-center">
+              <ArrowDownCircle className="h-5 w-5 text-expense mx-auto mb-1" />
+              <p className="text-xs text-expense font-medium">Saídas</p>
+              <p className="text-lg font-bold text-expense">
                 {formatCurrency(totalSaidas)}
               </p>
             </div>
@@ -175,7 +175,7 @@ export function BalanceModal({
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-[100px] flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+              <div className="h-[100px] flex items-center justify-center text-muted-foreground">
                 Sem transações neste período.
               </div>
             )}
