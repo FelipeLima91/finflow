@@ -34,7 +34,21 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setError("Email ou senha incorreto.");
+      // Falha de rede (servidor fora do ar, URL do Supabase errada) NÃO é
+      // credencial inválida. Mostrar "senha incorreta" nesse caso faz o usuário
+      // caçar o problema no lugar errado.
+      const isNetworkError =
+        error.name === "AuthRetryableFetchError" ||
+        error.message === "Failed to fetch" ||
+        !error.status;
+
+      console.error("[finflow] Falha no login:", error.message, error);
+
+      setError(
+        isNetworkError
+          ? "Não foi possível conectar ao servidor. Verifique sua conexão e as configurações do app."
+          : "Email ou senha incorreto."
+      );
       setLoading(false);
     } else {
       router.push("/");
