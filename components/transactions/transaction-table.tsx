@@ -16,6 +16,7 @@ import { CATEGORY_ICONS } from "@/lib/constants";
 import { parseLocalDate } from "@/lib/utils";
 import { Transaction } from "@/types";
 import { MoreHorizontal, Pencil } from "lucide-react";
+import { AuthorBadge } from "./author-badge";
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -41,6 +42,9 @@ export function TransactionTable({
           <TableHead className="text-right">
             <span className="md:hidden">R$</span>
             <span className="hidden md:inline">Valor</span>
+          </TableHead>
+          <TableHead className="w-[44px]">
+            <span className="sr-only">Quem lançou</span>
           </TableHead>
           {isEditing && <TableHead className="w-[50px]">Ações</TableHead>}
         </TableRow>
@@ -131,6 +135,9 @@ export function TransactionTable({
                 }).format(transaction.amount)}
               </span>
             </TableCell>
+            <TableCell className="w-[44px] text-center">
+              <AuthorBadge author={transaction.author} />
+            </TableCell>
             {isEditing && (
               <TableCell className="py-0 flex items-center gap-1">
                 <Button
@@ -148,7 +155,7 @@ export function TransactionTable({
         {transactions.length === 0 && (
           <TableRow>
             <TableCell
-              colSpan={isEditing ? 5 : 4}
+              colSpan={isEditing ? 6 : 5}
               className="text-center text-muted-foreground h-24"
             >
               Nenhuma transação registrada.

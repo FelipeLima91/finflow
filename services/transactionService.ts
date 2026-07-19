@@ -60,11 +60,21 @@ export const LocalTransactionService: TransactionService = {
 
 export const SupabaseTransactionService: TransactionService = {
   getAll: async () => {
-    const { data } = await supabase
+    // Embute o perfil do autor via a FK transactions_author_fkey (user_id -> profiles.id).
+    // A RLS já limita o resultado às transações da household do usuário logado.
+    const { data, error } = await supabase
       .from("transactions")
-      .select("*")
+      .select("*, author:profiles!transactions_author_fkey(id, email, display_name)")
       .order("date", { ascending: false });
-    return data || [];
+
+    // Não engolir o erro: sem isso uma falha de RLS/schema vira "lista vazia"
+    // silenciosa e fica impossível diagnosticar. Aqui só registramos (sem lançar)
+    // para a tela não travar no skeleton — quem chama não trata exceção.
+    if (error) {
+      console.error("[finflow] Falha ao buscar transações:", error.message, error);
+    }
+
+    return (data as Transaction[]) || [];
   },
 
   create: async (transaction) => {
@@ -73,17 +83,38 @@ export const SupabaseTransactionService: TransactionService = {
     } = await supabase.auth.getUser();
     if (!user) throw new Error("User not authenticated");
 
-    await supabase.from("transactions").insert({
+    // household_id vem do DEFAULT current_household_id() no banco.
+    const { error } = await supabase.from("transactions").insert({
         ...transaction,
         user_id: user.id
     });
+
+    if (error) {
+      console.error("[finflow] Falha ao criar transação:", error.message, error);
+      throw new Error(error.message);
+    }
   },
 
   update: async (id, transaction) => {
-    await supabase.from("transactions").update(transaction).eq("id", id);
+    // `author` é um objeto embutido no select, não uma coluna real — enviá-lo
+    // no update faria o Postgres recusar. Mantemos também o user_id original
+    // (a autoria não muda só porque outra pessoa editou).
+    const fields = { ...transaction };
+    delete fields.author;
+    delete fields.user_id;
+
+    const { error } = await supabase.from("transactions").update(fields).eq("id", id);
+    if (error) {
+      console.error("[finflow] Falha ao atualizar transação:", error.message, error);
+      throw new Error(error.message);
+    }
   },
 
   delete: async (id) => {
-    await supabase.from("transactions").delete().eq("id", id);
+    const { error } = await supabase.from("transactions").delete().eq("id", id);
+    if (error) {
+      console.error("[finflow] Falha ao excluir transação:", error.message, error);
+      throw new Error(error.message);
+    }
   },
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, Check, ChevronsUpDown, Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { TRANSACTION_CATEGORIES } from "@/lib/constants";
@@ -28,6 +28,14 @@ interface NewTransactionFormProps {
   onSave: (dados: any) => Promise<void>;
 }
 
+/** "YYYY-MM-DD" de hoje, em horário LOCAL (toISOString() converteria pra UTC). */
+function todayLocal(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(
+    now.getDate()
+  ).padStart(2, "0")}`;
+}
+
 export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
   const [amount, setAmount] = React.useState("");
   const [open, setOpen] = React.useState(false);
@@ -35,17 +43,12 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
   const [inputValue, setInputValue] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [type, setType] = React.useState<"entrada" | "saida">("saida");
+  const [date, setDate] = React.useState(todayLocal());
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  // Seleciona categorias baseado no tipo de transação
-  // EDIT: Usando lista unificada por enquanto, ou filtrar se necessário
-  // const activeCategories = type === "entrada" ? incomeCategories : expenseCategories;
-  const activeCategories = TRANSACTION_CATEGORIES;
-
-  // Limpa categoria ao trocar tipo
-  React.useEffect(() => {
-    setCategory("");
-  }, [type]);
+  // A lista de categorias é a mesma para entrada e saída, então trocar de aba
+  // NÃO limpa a categoria já escolhida (antes limpava, o que fazia o usuário
+  // perder a seleção a cada troca).
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -76,11 +79,15 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
     // Essa linha remove tudo que não é número e divide por 100
     const numericAmount = Number(amount.replace(/\D/g, "")) / 100;
 
+    // Usa a data escolhida pelo usuário (permite lançamento retroativo) com a
+    // hora atual, para manter a ordenação estável dentro de um mesmo dia.
+    // Tudo em horário LOCAL: toISOString() converteria pra UTC e poderia mudar
+    // o dia (ex: 00:55 BRT viraria o dia anterior).
     const now = new Date();
-    // Formata a data LOCAL para evitar o bug de fuso horário com toISOString()
-    // toISOString() converte para UTC, o que pode mudar o dia (ex: 00:55 BRT → dia anterior em UTC)
-    const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-    console.log("Enviando data local:", localDate);
+    const time = `${String(now.getHours()).padStart(2, "0")}:${String(
+      now.getMinutes()
+    ).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+    const localDate = `${date}T${time}`;
 
     // Chama a função do Pai enviando os dados limpos
     await onSave({
@@ -91,11 +98,12 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
       date: localDate,
     });
 
-    // Limpa tudo depois de salvar
+    // Limpa tudo depois de salvar (a data volta pra hoje)
     setDescription("");
     setAmount("");
     setCategory("");
     setType("saida");
+    setDate(todayLocal());
     setIsSubmitting(false);
   }
 
@@ -108,6 +116,44 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
     <div className="h-fit min-w-0">
       <h2 className="text-lg font-semibold text-foreground mb-4">Nova Transação</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Seletor de tipo em abas — evita abrir um dropdown só pra isso */}
+          <div
+            role="radiogroup"
+            aria-label="Tipo de transação"
+            className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1"
+          >
+            <button
+              type="button"
+              role="radio"
+              aria-checked={type === "saida"}
+              onClick={() => setType("saida")}
+              className={cn(
+                "flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all",
+                type === "saida"
+                  ? "bg-card text-expense shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <ArrowDownCircle className="h-4 w-4" />
+              Saída
+            </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={type === "entrada"}
+              onClick={() => setType("entrada")}
+              className={cn(
+                "flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all",
+                type === "entrada"
+                  ? "bg-card text-income shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <ArrowUpCircle className="h-4 w-4" />
+              Entrada
+            </button>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="descricao">Descrição</Label>
             <Input
@@ -131,15 +177,14 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="tipo">Tipo</Label>
-              <select
-                className="flex h-9 w-full rounded-md border border-input bg-transparent dark:bg-input/30 px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
-                value={type}
-                onChange={(e) => setType(e.target.value as "entrada" | "saida")}
-              >
-                <option value="saida">Saída</option>
-                <option value="entrada">Entrada</option>
-              </select>
+              <Label htmlFor="data">Data</Label>
+              <Input
+                id="data"
+                type="date"
+                value={date}
+                max={todayLocal()}
+                onChange={(e) => setDate(e.target.value)}
+              />
             </div>
           </div>
 

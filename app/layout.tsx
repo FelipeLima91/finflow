@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  // Sem maximumScale/userScalable: bloquear o zoom quebra a acessibilidade
+  // (WCAG 1.4.4) e impede quem tem baixa visão de ampliar a tela.
 };
 
 export default function RootLayout({

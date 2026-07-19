@@ -2,9 +2,10 @@
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import { LogOut, Sun, Moon, Wallet } from "lucide-react";
+import { LogOut, Sun, Moon, Wallet, BarChart3 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "./theme-provider";
+import Link from "next/link";
 
 export function Header({ isGuest }: { isGuest?: boolean }) {
   const router = useRouter();
@@ -49,6 +50,12 @@ export function Header({ isGuest }: { isGuest?: boolean }) {
         ) : userEmail ? (
           <span className="text-sm text-muted-foreground">Olá, {userEmail}</span>
         ) : null}
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/dashboard">
+            <BarChart3 className="mr-2 h-4 w-4" />
+            Relatórios
+          </Link>
+        </Button>
         <Button
           variant="outline"
           size="icon"

@@ -4,11 +4,20 @@ import { Footer } from "@/components/footer";
 import { NewTransactionForm } from "@/components/new-transaction-form";
 import { SummaryCards } from "@/components/summary-cards";
 import { TransactionList } from "@/components/transaction-list";
+import { PeriodFilter } from "@/components/period-filter";
+import { MemberSummary } from "@/components/member-summary";
+import {
+  filterByPeriod,
+  monthOptions,
+  periodLabel,
+  previousPeriod,
+  type Period,
+} from "@/lib/period";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/lib/supabase";
 import { Transaction } from "@/types";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LocalTransactionService, SupabaseTransactionService, TransactionService } from "@/services/transactionService";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
@@ -18,6 +27,23 @@ export default function Home() {
   const [transacoes, setTransacoes] = useState<Transaction[]>([]);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
+  const [period, setPeriod] = useState<Period>("all");
+
+  // Meses disponíveis, derivados das transações existentes
+  const mesesDisponiveis = useMemo(() => monthOptions(transacoes), [transacoes]);
+
+  // Transações do período selecionado e do período anterior (para o comparativo)
+  const transacoesDoPeriodo = useMemo(
+    () => filterByPeriod(transacoes, period),
+    [transacoes, period]
+  );
+
+  const periodoAnterior = useMemo(() => previousPeriod(period), [period]);
+
+  const transacoesAnteriores = useMemo(
+    () => (periodoAnterior ? filterByPeriod(transacoes, periodoAnterior) : []),
+    [transacoes, periodoAnterior]
+  );
   
   // Serviço dinâmico (será definido no useEffect)
   const [service, setService] = useState<TransactionService | null>(null);
@@ -154,20 +180,38 @@ export default function Home() {
             )}
           </div>
 
+          {/* FILTRO DE PERÍODO — controla cards, lista e resumo por pessoa */}
+          <PeriodFilter
+            value={period}
+            onChange={setPeriod}
+            options={mesesDisponiveis}
+          />
+
           {/* CARDS DE RESUMO */}
-          <SummaryCards transacoes={transacoes} />
+          <SummaryCards
+            transacoes={transacoesDoPeriodo}
+            previousTransacoes={transacoesAnteriores}
+            periodLabel={periodLabel(period)}
+            previousLabel={periodoAnterior ? periodLabel(periodoAnterior) : null}
+          />
 
           {/* ÁREA PRINCIPAL: FORMULÁRIO E TABELA */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             {/* COLUNA DA ESQUERDA: NOVA TRANSAÇÃO - 1/3 */}
-            <div className="surface-card p-5 md:p-6">
-              <NewTransactionForm onSave={handleSalvar} />
+            <div className="space-y-6">
+              <div className="surface-card p-5 md:p-6">
+                <NewTransactionForm onSave={handleSalvar} />
+              </div>
+              <MemberSummary
+                transacoes={transacoesDoPeriodo}
+                periodLabel={periodLabel(period)}
+              />
             </div>
 
             {/* COLUNA DA DIREITA: HISTÓRICO - 2/3 */}
             <div className="md:col-span-2 min-w-0 surface-card p-5 md:p-6">
               <TransactionList
-                transacoes={transacoes}
+                transacoes={transacoesDoPeriodo}
                 onDelete={handleExcluir}
                 onUpdate={handleUpdate}
                 limit={7}

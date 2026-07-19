@@ -21,18 +21,29 @@ O FinFlow utiliza as seguintes tecnologias:
 finflow/
 ├── app/
 │   ├── page.tsx                 # 🎯 Página principal (orquestra o CRUD)
+│   ├── dashboard/page.tsx       # 📈 Relatórios com gráficos
 │   └── login/
 │       └── page.tsx             # 🔐 Tela de login + botão Visitante
 ├── components/
-│   ├── header.tsx               # 🏷️ Cabeçalho (exibe usuário/visitante)
+│   ├── header.tsx               # 🏷️ Cabeçalho (usuário + link Relatórios)
 │   ├── new-transaction-form.tsx # ✏️ Formulário de criação
-│   └── transaction-list.tsx     # 📋 Listagem + edição + exclusão
+│   ├── transaction-list.tsx     # 📋 Listagem + edição + exclusão
+│   ├── summary-cards.tsx        # 📊 Cards de Entradas/Saídas/Saldo
+│   ├── period-filter.tsx        # 📅 Filtro de mês (abas)
+│   ├── member-summary.tsx       # 👥 Totais por pessoa
+│   └── transactions/
+│       └── author-badge.tsx     # ⭕ Círculo com iniciais de quem lançou
 ├── services/
 │   └── transactionService.ts   # 🔀 Camada de abstração (Supabase ou LocalStorage)
 ├── lib/
-│   └── supabase.ts             # 🔌 Conexão com banco de dados
+│   ├── supabase.ts             # 🔌 Conexão com banco de dados
+│   ├── period.ts               # 📅 Filtros de período + somas + formatação
+│   └── utils.ts                # 🛠️ cn() e parseLocalDate()
+├── supabase/
+│   ├── schema.sql              # 🗄️ Tabela transactions + RLS
+│   └── migrations/             # 🔁 Conta conjunta e novos membros
 └── types/
-    └── index.ts                # 📝 Definição do modelo Transaction
+    └── index.ts                # 📝 Modelos Transaction e Profile
 ```
 
 ---
@@ -44,15 +55,27 @@ finflow/
 O primeiro passo é definir **como uma transação se parece**. Usamos TypeScript para criar uma interface:
 
 ```typescript
+/** Espelho de auth.users no schema public — permite exibir quem lançou. */
+export interface Profile {
+  id: string;
+  email: string | null;
+  display_name: string | null;
+}
+
 export interface Transaction {
   id: string; // ID único (gerado pelo Supabase)
   description: string; // Ex: "Mercado", "Salário"
   amount: number; // Valor em reais (ex: 150.50)
   type: "income" | "expense"; // Entrada ou Saída
   category: string; // Ex: "Alimentação", "Transporte"
-  date: string; // Data em formato ISO
+  date: string; // Data local, ex: "2026-07-18T14:30:00"
+  user_id?: string | null; // Quem lançou (preenchido pelo banco)
+  author?: Profile | null; // Perfil do autor, embutido no SELECT
 }
 ```
+
+> 📌 **Conta conjunta**: `user_id` é quem *criou* a transação. A transação em si
+> pertence a uma `household` (conta compartilhada) — veja a seção 10.
 
 ### 💡 Por que isso é importante?
 
@@ -188,21 +211,35 @@ async function handleSubmit(e: React.FormEvent) {
   // Converte "R$ 1.200,50" → 1200.50
   const numericAmount = Number(amount.replace(/\D/g, "")) / 100;
 
+  // Usa a data escolhida no formulário (permite lançamento retroativo)
+  // com a hora atual, para a ordenação ficar estável no mesmo dia.
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2, "0")}:${String(
+    now.getMinutes()
+  ).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+  const localDate = `${date}T${time}`;
+
   // Chama a função do componente pai
   await onSave({
     description,
     amount: numericAmount,
     category,
     type: type === "entrada" ? "income" : "expense",
-    date: new Date().toISOString(),
+    date: localDate,
   });
 
-  // Limpa o formulário
+  // Limpa o formulário (a data volta pra hoje)
   setDescription("");
   setAmount("");
   setCategory("");
+  setDate(todayLocal());
 }
 ```
+
+> ⚠️ **Cuidado com fuso horário**: nunca use `toISOString()` aqui. Ele converte
+> para UTC e pode **mudar o dia** — às 00:55 no Brasil (UTC-3) viraria o dia
+> anterior. Por isso montamos a string em horário local à mão, e a leitura usa
+> `parseLocalDate()` (em `lib/utils.ts`).
 
 ### 4.3 Salvando (via Service)
 
@@ -443,12 +480,79 @@ O app permite que novos usuários **testem a interface sem criar conta**.
 
 ---
 
-## 🚀 10. Próximos Passos de Estudo
+## 👨‍👩‍👧 10. CONTA CONJUNTA (Household)
 
-1. **Autenticação:** Veja como o Supabase Auth protege as rotas
-2. **Validação:** Adicione validação de formulários com Zod ou React Hook Form
-3. **Paginação:** Adicione paginação para listas grandes
-4. **Filtros:** Implemente filtros por data, categoria, etc.
+O app é multiusuário: várias pessoas compartilham as **mesmas** transações, e
+cada lançamento guarda **quem o criou**.
+
+### Modelo
+
+```
+auth.users ──1:1── profiles          (espelho público: nome + email)
+                       │
+households ──*── household_members ──┘   (quem participa de qual conta)
+     │
+     └──*── transactions              (household_id = a conta, user_id = quem lançou)
+```
+
+**Por que a tabela `profiles` existe?** O navegador não consegue consultar
+`auth.users` (schema protegido do Supabase). O `profiles` espelha os dados
+públicos e é o que torna possível exibir o autor. Um trigger o preenche
+automaticamente a cada cadastro.
+
+### Lendo o autor junto da transação
+
+```typescript
+const { data, error } = await supabase
+  .from("transactions")
+  .select("*, author:profiles!transactions_author_fkey(id, email, display_name)")
+  .order("date", { ascending: false });
+```
+
+O `author:profiles!transactions_author_fkey(...)` é um **embed** do PostgREST:
+ele segue a foreign key `user_id → profiles.id` e devolve o perfil aninhado.
+Sem essa FK, o Supabase responde
+`Could not find a relationship between 'transactions' and 'profiles'`.
+
+### Segurança: quem vê o quê
+
+A proteção mora no banco (RLS), não no código do app:
+
+```sql
+create policy "household_select" on public.transactions for select
+  using (household_id = public.current_household_id());
+```
+
+- Você só enxerga transações da household de que participa
+- `household_id` e `user_id` têm **DEFAULT no banco**
+  (`current_household_id()` e `auth.uid()`) — o front não consegue forjar autoria
+- `current_household_id()` é `SECURITY DEFINER` para **não** disparar a RLS de
+  `household_members` de novo, o que causaria recursão infinita (pegadinha
+  clássica do Supabase)
+
+### 💡 Tratamento de erros
+
+Todas as operações do `SupabaseTransactionService` verificam o `error` retornado.
+Ignorá-lo faz uma falha de RLS virar "lista vazia" silenciosa — praticamente
+impossível de diagnosticar depois.
+
+```typescript
+const { data, error } = await supabase.from("transactions").select(...);
+if (error) {
+  console.error("[finflow] Falha ao buscar transações:", error.message, error);
+}
+```
+
+---
+
+## 🚀 11. Próximos Passos de Estudo
+
+1. **Validação:** Adicione validação de formulários com Zod ou React Hook Form
+2. **Paginação:** Adicione paginação para listas grandes
+3. **Realtime:** Use o Supabase Realtime para a tela atualizar sozinha quando a
+   outra pessoa lançar algo
+4. **Toasts:** Troque os `alert()` de erro por notificações mais elegantes
+5. **Categorias por tipo:** Hoje a lista é a mesma para entrada e saída
 
 ---
 
