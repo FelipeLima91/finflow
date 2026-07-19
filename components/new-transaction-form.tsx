@@ -4,7 +4,7 @@ import * as React from "react";
 import { ArrowDownCircle, ArrowUpCircle, Check, ChevronsUpDown, Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { TRANSACTION_CATEGORIES } from "@/lib/constants";
+import { categoriesForType } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -46,9 +46,21 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
   const [date, setDate] = React.useState(todayLocal());
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  // A lista de categorias é a mesma para entrada e saída, então trocar de aba
-  // NÃO limpa a categoria já escolhida (antes limpava, o que fazia o usuário
-  // perder a seleção a cada troca).
+  // Entrada e saída têm listas de categoria diferentes ("Bares e Restaurantes"
+  // não faz sentido como entrada, "Salário" não faz sentido como saída).
+  const activeCategories = categoriesForType(type === "entrada" ? "income" : "expense");
+
+  /**
+   * Ao trocar de aba, só limpa a categoria se ela não existir no novo tipo.
+   * Categorias comuns aos dois (Investimento, Banco, Outros) são preservadas.
+   */
+  const handleTypeChange = (next: "entrada" | "saida") => {
+    setType(next);
+    const nextCategories = categoriesForType(next === "entrada" ? "income" : "expense");
+    if (category && !nextCategories.includes(category)) {
+      setCategory("");
+    }
+  };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -126,7 +138,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
               type="button"
               role="radio"
               aria-checked={type === "saida"}
-              onClick={() => setType("saida")}
+              onClick={() => handleTypeChange("saida")}
               className={cn(
                 "flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all",
                 type === "saida"
@@ -141,7 +153,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
               type="button"
               role="radio"
               aria-checked={type === "entrada"}
-              onClick={() => setType("entrada")}
+              onClick={() => handleTypeChange("entrada")}
               className={cn(
                 "flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all",
                 type === "entrada"
@@ -222,7 +234,7 @@ export function NewTransactionForm({ onSave }: NewTransactionFormProps) {
                       </button>
                     </CommandEmpty>
                     <CommandGroup>
-                      {TRANSACTION_CATEGORIES.map((item) => (
+                      {activeCategories.map((item) => (
                         <CommandItem
                           key={item}
                           value={item}

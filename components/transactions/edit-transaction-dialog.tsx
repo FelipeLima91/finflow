@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TRANSACTION_CATEGORIES } from "@/lib/constants";
+import { categoriesForType } from "@/lib/constants";
 import { Transaction } from "@/types";
 import { Trash } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -86,6 +86,15 @@ export function EditTransactionDialog({
     }
   };
 
+  // Lançamentos antigos (ou categorias criadas à mão) podem ter uma categoria
+  // que não pertence à lista do tipo atual. Mantemos ela como opção para a
+  // edição não trocar o dado do usuário sem ele pedir.
+  const categoriasDoTipo = categoriesForType(editForm.type);
+  const categoriasDisponiveis =
+    editForm.category && !categoriasDoTipo.includes(editForm.category)
+      ? [editForm.category, ...categoriasDoTipo]
+      : categoriasDoTipo;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -124,12 +133,16 @@ export function EditTransactionDialog({
                 id="edit-type"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 value={editForm.type}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const nextType = e.target.value as "income" | "expense";
+                  // Só descarta a categoria se ela não existir no novo tipo.
+                  const valida = categoriesForType(nextType).includes(editForm.category);
                   setEditForm({
                     ...editForm,
-                    type: e.target.value as "income" | "expense",
-                  })
-                }
+                    type: nextType,
+                    category: valida ? editForm.category : "",
+                  });
+                }}
               >
                 <option value="expense">Saída</option>
                 <option value="income">Entrada</option>
@@ -147,7 +160,7 @@ export function EditTransactionDialog({
                   setEditForm({ ...editForm, category: e.target.value })
                 }
               >
-                {TRANSACTION_CATEGORIES.map((cat) => (
+                {categoriasDisponiveis.map((cat) => (
                   <option key={cat} value={cat}>
                     {cat}
                   </option>
